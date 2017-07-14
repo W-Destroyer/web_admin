@@ -75,7 +75,7 @@ var config = {
         // test 
 
         // font-end
-        index: './public/src/js/pages/index.jsx',
+        // index: './public/src/js/pages/index.jsx',
         // register: './public/src/js/register.js',
         // index:  './public/src/js/index.js',
         // product:  './public/src/js/product/product.js',
