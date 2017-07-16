@@ -7,11 +7,6 @@ var bodyParser = require('body-parser');
 var ejs = require('ejs');
 var argv = require('yargs').argv;
 
-// 连接数据库
-// var dbConnect = require('./database/db_connect');
-// var dbConfig = require('./config/db.config');
-// var db = dbConnect(dbConfig);
-
 /**
  * 请求中间件 
  * @middleware 输出日志文件 打印日志；
@@ -24,10 +19,6 @@ var middleware = require('./utils/middleware');
 var verifyLogging = require('./utils/login');
 var verifyAdminLogging = require('./utils/adminlogin');
 var setVisitCount = require('./utils/visitcount');
-/** 
- * 路由控制
- */
-var router = require('./routes/router');
 
 /**
  * 前端构建工具 打包压缩
@@ -75,30 +66,11 @@ app.use(middleware());
 app.use(verifyLogging());
 app.use(verifyAdminLogging());
 
-app.use(router);
-
-// error handlers
-
-// development error handler
-// will print stacktrace
-if (argv.dev) {
-    app.use(function(err, req, res, next) {
-        res.status(err.status || 500);
-        res.render('error', {
-            message: err.message,
-            error: err
-        });
-    });
-}
-
-// production error handler
-// no stacktraces leaked to user
-app.use(function(err, req, res, next) {
-    res.status(err.status || 500);
-    res.render('error', {
-        message: err.message,
-        error: {}
-    });
-});
+/** 
+ * 路由控制
+ */
+app.use('/', require('./routes/index'));
+app.use('/api', require('./routes/api'));
+app.use('*', require('./routes/error'));
 
 module.exports = app;

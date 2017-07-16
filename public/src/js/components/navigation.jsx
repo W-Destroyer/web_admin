@@ -20,7 +20,7 @@ export default class Nav extends React.Component {
             name: '页面设置',
             icon: 'setting',
             type: 'group',
-            link: '/admin/pagesetting',
+            link: '/pagesetting',
             children: [{
                 name: '整站设置',
                 link: '/pagesetting/fullstation',
@@ -47,7 +47,7 @@ export default class Nav extends React.Component {
             name: '商品管理',
             icon: 'appstore',
             type: 'group',
-            link: '/admin',
+            link: '/',
             children: [{
                 name: '分类列表',
                 link: '/production/list',
@@ -62,7 +62,7 @@ export default class Nav extends React.Component {
             name: '新闻管理',
             icon: 'book',
             type: 'group',
-            link: '/admin',
+            link: '/',
             children: [{
                 name: '新闻列表',
                 link: '/news/list',
@@ -135,9 +135,9 @@ export default class Nav extends React.Component {
     render() {
         var subMenuList = this.state.list.map((item, index, arr) => item.type == 'group' ? (
             <SubMenu key={"sub_" + index} title={<span><Icon type={item.icon} /><span>{item.name}</span></span>}>
-            {item.children.map((child, childIndex) => (<Menu.Item key={'item_' + index + '_' + childIndex}><Link to={'/admin' + (child.link ? child.link : '')}>{child.name}</Link></Menu.Item>))}
+            {item.children.map((child, childIndex) => (<Menu.Item key={'item_' + index + '_' + childIndex}><Link to={child.link ? child.link : ''}>{child.name}</Link></Menu.Item>))}
             </SubMenu> ) : (
-                <Menu.Item key={'item_' + index}><Link to={'/admin' + (item.link ? item.link : '')}><Icon type={item.icon} />{item.name}</Link></Menu.Item>
+                <Menu.Item key={'item_' + index}><Link to={item.link ? item.link : ''}><Icon type={item.icon} />{item.name}</Link></Menu.Item>
             )
         )
         return (

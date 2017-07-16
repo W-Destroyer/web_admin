@@ -1,7 +1,6 @@
 const router = require('express').Router();
 const _ = require('underscore');
 const { SHA1 } = require('crypto-js');
-const User = require('../../../database/model_user');
 
 router.get('/', (req, res) => {
     var username = req.query.username;

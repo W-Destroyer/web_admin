@@ -74,16 +74,9 @@ var config = {
         
         // test 
 
-        // font-end
-        // index: './public/src/js/pages/index.jsx',
-        // register: './public/src/js/register.js',
-        // index:  './public/src/js/index.js',
-        // product:  './public/src/js/product/product.js',
-        // showproduct:  './public/src/js/product/showproduct.js',
-
         // admin 
-        // "admin/login":  './public/src/js/admin/login.jsx',
-        "admin/index":  './public/src/js/admin/index.jsx'
+        // "login":  './public/src/js/login.jsx',
+        "index":  './public/src/js/index.jsx'
     },
     output: {
         path: __dirname + '/public/dist/',
@@ -112,8 +105,6 @@ var config = {
             test: /\.(jpg|png)$/,
             loader: "url-loader?limit=8192"
         }],
-        // noParse: [/public\/src\/js_components\/react\/react.js/, /public\/src\/js_components\/react\/react-dom.js/]
-        // noParse: [/node_modules\/redux\/dist\/redux.js/, /node_modules\/react-redux\/dist\/react-redux.js/]
     },
     devtool: "inline-source-map",
     externals: {
@@ -125,7 +116,6 @@ var config = {
         'react-router-redux': 'ReactRouterRedux',
         'underscore': '_'
     },
-    // resolveLoader: { root: path.join(__dirname, "node_modules") },
     resolve: {
         modules: [process.cwd() + '/public/src/', process.cwd() + '/node_modules/', process.cwd() + '/public/src/js_components/'],
         alias: {

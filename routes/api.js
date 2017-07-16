@@ -1,10 +1,10 @@
 var express = require('express');
-var api = express.Router();
+var router = express.Router();
 
-api.use('/', require('./api/index'));
-api.use('/user', require('./api/user'));
-api.use('/product', require('./api/product'));
+router.use('/login', require('./api/login'));
 
-api.use('/admin', require('./admin/api')) // admin api
+router.use('/user', require('./api/user'));
 
-module.exports = api;
+router.use('/product', require('./api/product'));
+
+module.exports = router;

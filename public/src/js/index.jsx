@@ -47,7 +47,7 @@ console.log(store);
 ReactDOM.render((
     <Provider store={store}>
         <Router history={ history }>
-            <Route path='/admin' component={ App } >
+            <Route path='/' component={ App } >
                 <IndexRoute component={ Dashboard } />
 
                 <Route path='pagesetting'>

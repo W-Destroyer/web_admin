@@ -16,7 +16,7 @@ import { connect } from 'react-redux';
 import Header from './header';
 import Nav from './navigation';
 
-import '../../../css/admin/admin.less';
+import '../../css/admin.less';
 
 
 class HeaderBreadcrumb extends Component {
