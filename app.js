@@ -32,7 +32,7 @@ var webpackConfig = require('./webpack.config');
 var app = express();
 
 // view engine setup
-app.set('views', path.join(__dirname, 'public/dist/html'));
+app.set('views', path.join(__dirname, 'views'));
 app.engine("html", ejs.renderFile);
 app.set('view engine', 'html');
 

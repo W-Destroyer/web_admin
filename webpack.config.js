@@ -106,7 +106,7 @@ var config = {
             loader: "url-loader?limit=8192"
         }],
     },
-    devtool: "inline-source-map",
+    // devtool: "inline-source-map",
     externals: {
         'react': 'React',
         'react-dom': 'ReactDOM',
@@ -146,12 +146,6 @@ var config = {
         extensions: ['.js', '.html', '.jsx', '.json', '.ejs']
     },
     plugins: webpackPlugins
-}
-
-if(os.platform() !== 'darwin' && os.platform() !== 'linux') {
-    config.resolve.extensions.unshift('');
-} else if(os.platform() === 'win32') {
-    config.resolve.extensions.unshift('');
 }
 
 module.exports = config;
