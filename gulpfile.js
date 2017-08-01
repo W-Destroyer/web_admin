@@ -100,7 +100,7 @@ gulp.task("express", shell.task([
 ]));
 
 gulp.task('clean', (cb) => {
-    gulp.src(['public/dist', 'views/*']) //'public/rev',
+    gulp.src(['public/dist']) //'public/rev',
         .pipe(clean());
     cb();
 })

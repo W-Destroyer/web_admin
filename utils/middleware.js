@@ -43,12 +43,6 @@ function middleware(opts){
                     message: e.stack || e.message || e.toString,
                     error: e
                 };
-            } else {
-                data = {
-                    code: 0,
-                    message: "",
-                    data: data || ""
-                }
             }
             send.call(res, data);
             // showLog(data);

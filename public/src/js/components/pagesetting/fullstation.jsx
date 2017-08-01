@@ -9,7 +9,88 @@ import { connect } from 'react-redux';
 import { Collapse, Table, Input, Button, Popconfirm, Modal, message, Icon } from 'antd/dist/antd';
 const Panel = Collapse.Panel;
 
-import { showModal, hideModal, addFriendLink, editFriendLink } from '../../actions/baseinfo'
+import {
+    showModal,
+    hideModal,
+    addFriendLink,
+    editFriendLink,
+    initCompanyName,
+    editCompanyName,
+    saveCompanyName,
+} from '../../actions/baseinfo'
+
+class CompanyName extends Component {
+    constructor() {
+        super();
+        // this.state = {
+        //     isEdit: false
+        // }
+    }
+
+    componentDidMount() {
+        const { dispatch } = this.props;
+        dispatch(initCompanyName());
+    }
+
+    componentDidUpdate() {
+        var { data } = this.props;
+        message.destroy();
+        if (data.isFetching)
+            message.loading('正在加载');
+
+        if (data.invalidate)
+            message.error(data.message);
+    }
+
+    onEdit(e) {
+        const { dispatch } = this.props;
+        dispatch(editCompanyName(true));
+    }
+
+    onChange(e) {
+        console.log(e.target.value);
+        this.data = e.target.value;
+    }
+
+    handleClick(e) {
+        const { dispatch } = this.props;
+        dispatch(saveCompanyName(this.data));
+    }
+
+    handleCancel(e) {
+        const { dispatch } = this.props;
+        dispatch(editCompanyName(false))
+    }
+
+    render() {
+        var { data } = this.props;
+        this.data = data.data;
+
+        if (data.isEdit) {
+            return (
+                <div style={{padding: "0 20px"}}>
+                    <div style={{paddingBottom: '10px'}}>
+                        <Input type="text"
+                            defaultValue={data.data}
+                            onChange={(e) => this.onChange(e)}
+                        />
+                    </div>
+                    <div>
+                        <Button style={{marginRight: '10px'}} onClick={e => this.handleCancel(e)}>取消</Button>
+                        <Button style={{marginLeft: '10px'}} onClick={e => this.handleClick(e)}>保存</Button>
+                    </div>
+                </div>
+            )
+        } else {
+            return (
+                <div style={{padding: "0 20px"}}>
+                    <div style={{paddingBottom: '10px'}}>{data.data}</div>
+                    <Button onClick={e => this.onEdit(e)}>编辑</Button>
+                </div>
+            )
+        }
+    }
+}
 
 class FriendModal extends Component {
     
@@ -187,22 +268,18 @@ class FullStation extends Component {
         return (
             <Collapse bordered={false} defaultActiveKey={[]}>
                 <Panel header={<div style={{fontWeight: 600}}>公司名称设置</div>} key="1" style={customPanelStyle}>
-                    <div>江西艾麦达科技有限公司</div>
+                    <CompanyName data={baseinfo.name} dispatch={dispatch}/>
                 </Panel>
                 <Panel header={<span style={{fontWeight: 600}}>友情链接设置</span>} key="2" style={customPanelStyle}>
                     <FriendlyLink data={baseinfo.friendLink} dispatch={dispatch}/>
                 </Panel>
                 <Panel header={<span style={{fontWeight: 600}}>技术支持设置</span>} key="3" style={customPanelStyle}>
-                    <FriendlyLink />
                 </Panel>
                 <Panel header={<span style={{fontWeight: 600}}>博客资讯设置</span>} key="4" style={customPanelStyle}>
-                    <FriendlyLink />
                 </Panel>
                 <Panel header={<span style={{fontWeight: 600}}>关于公司设置</span>} key="5" style={customPanelStyle}>
-                    <FriendlyLink />
                 </Panel>
                 <Panel header={<span style={{fontWeight: 600}}>备案号设置</span>} key="6" style={customPanelStyle}>
-                    <FriendlyLink />
                 </Panel>
             </Collapse>
         )
@@ -210,10 +287,8 @@ class FullStation extends Component {
 }
 
 const mapStateToProps = (state, ownProps) => {
+
     return {
-        nav: state.nav,
-        user: state.user,
-        product: state.product,
         baseinfo: state.baseinfo
     }
 }
