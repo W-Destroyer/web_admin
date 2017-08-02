@@ -10,11 +10,10 @@ router.get('/getCompanyName', (req, res) => {
             return res.sendJSON(err);
         res.sendJSON(body)
     })
-})
+});
 
 router.post('/setCompanyName', (req, res) => {
     // var data = req.body;
-    console.log(req.body);
     var data = {
         companyName: req.body.companyName
     }
@@ -22,6 +21,42 @@ router.post('/setCompanyName', (req, res) => {
         form: data
     }, (err, result, body) => {
         if(err instanceof Error)
+            return res.sendJSON(err);
+        res.sendJSON(body);
+    })
+});
+
+router.get('/listFriendLink', (req, res) => {
+    request(nws('/sysconfig/listFriendLink'), (err, result, body) => {
+        if(err instanceof Error)
+            return res.sendJSON(err);
+        res.sendJSON(body);
+    });
+});
+
+router.post('/saveFriendLink', (req, res) => {
+    var data = {
+        id: req.body.id,
+        name: req.body.name,
+        address: req.body.address
+    };
+    request.post(nws('/sysconfig/saveFriendLink'), {
+        form: data
+    }, (err, result, body) => {
+        if(err instanceof Error)
+            return res.sendJSON(err);
+        res.sendJSON(body);
+    })
+});
+
+router.post('/delFriendLink', (req, res) => {
+    var data = {
+        id: req.body.id
+    }
+    request.post(nws('/sysconfig/delFriendLink'), {
+        form: data
+    }, (err, result, body) => {
+        if (err instanceof Error)
             return res.sendJSON(err);
         res.sendJSON(body);
     })

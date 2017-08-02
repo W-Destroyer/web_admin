@@ -10,21 +10,19 @@ import { Collapse, Table, Input, Button, Popconfirm, Modal, message, Icon } from
 const Panel = Collapse.Panel;
 
 import {
-    showModal,
-    hideModal,
-    addFriendLink,
-    editFriendLink,
     initCompanyName,
     editCompanyName,
     saveCompanyName,
+    initFriendLink,
+    editFriendLink,
+    addFriendLink,
+    saveFriendLink,
+    delFriendLink
 } from '../../actions/baseinfo'
 
 class CompanyName extends Component {
     constructor() {
         super();
-        // this.state = {
-        //     isEdit: false
-        // }
     }
 
     componentDidMount() {
@@ -98,35 +96,37 @@ class FriendModal extends Component {
         super();
     }
 
-    shouldComponentUpdate(nextProps, nextState) {
-        return true
-    }
+    // shouldComponentUpdate(nextProps, nextState) {
+    //     return true
+    // }
 
-    handleOk = () => {
+    handleOk() {
         this.props.onHandleOk(this.data);
     }
-    handleCancel = () => {
+
+    handleCancel() {
         this.props.onHandleCancel();
     }
 
-    handleChange = (key, e) => {
+    handleChange(key, e) {
         console.log(e.target.value)
         this.data[key] = e.target.value;
     }
 
     render() {
-        const { title, data, visible } = this.props;
-        this.data = data ? Object.assign({}, data) : {
-            name: '',
-            address: ''
-        };
-        console.log(data);
+        const { title, data, isEdit, confirmLoading } = this.props;
+        this.data = {
+            name: data['s_name'] || '',
+            address: data['s_value'] || ''
+        }
+        console.log(this.data);
 
         return (
             <Modal title={title}
-                visible={visible}
-                onOk={this.handleOk}
-                onCancel={this.handleCancel}
+                visible={isEdit}
+                confirmLoading={confirmLoading}
+                onOk={() => this.handleOk()}
+                onCancel={() => this.handleCancel()}
             >
                 <div>
                     <div style={{ padding: '5px' }}>网站名称：</div>
@@ -183,75 +183,72 @@ class FriendlyLink extends React.Component {
                 );
             }
         }];
-
-        // this.modalTitle = '';
     }
 
-    onAdd = () => {
+    componentDidMount() {
         const { dispatch } = this.props;
-        dispatch(showModal());
+        dispatch(initFriendLink());
+    }
+
+    onAdd() {
+        const { dispatch } = this.props;
+        dispatch(addFriendLink(true))
     }
 
     onEdit(index) {
         const { dispatch } = this.props;
-        dispatch(showModal(index))
+        dispatch(editFriendLink(true, index))
     }
 
     onDelete(index) {
-        const data = [...this.state.data];
-        data.splice(index, 1);
-        this.setState({ data });
+        const { dispatch, friendLink } = this.props;
+        const { data } = friendLink;
+        dispatch(delFriendLink(index, data[index]));
     }
     
-    onHandleOk = (changeData) => {
-        const { dispatch, data } = this.props;
-        const { changeId } = data;
-        if(changeId === -1) 
-            dispatch(addFriendLink(changeData));
-        else 
-            dispatch(editFriendLink(changeId, changeData));
+    onHandleOk(changeData) {
+        const { dispatch, friendLink } = this.props;
+        const { data, changeId } = friendLink;
+
+        dispatch(saveFriendLink(data[changeId], changeData));
     }
 
-    onHandleCancel = () => {
+    onHandleCancel() {
         const { dispatch } = this.props;
-        dispatch(hideModal());
+        dispatch(editFriendLink(false));
     }
 
     render() {
-
-        const { data } = this.props;
-
-        // const dataSource = data.list.map((item) => {
-        //     const obj = {};
-        //     Object.keys(item).forEach((key) => {
-        //         obj[key] = key === 'key' ? item[key] : item[key].value;
-        //     });
-        //     return obj;
-        // });
-
-        const { showModal, list, changeId } = data;
-        
+        const { friendLink } = this.props;
+        const { isEdit, isFetching, data, changeId } = friendLink;
+        const dataSource = friendLink.data.map(item => {
+            return {
+                key: item['s_id'],
+                name: item['s_name'],
+                address: item['s_value']
+            }
+        })
         const columns = this.columns;
 
         return (
             <div>
                 <FriendModal
                     key={changeId}
-                    data={list[changeId]}
-                    title={'友情链接设置'}
-                    visible={showModal}
-                    onHandleOk={(data) => this.onHandleOk(data)}
+                    data={data[changeId] || {}}
+                    title='友情链接设置'
+                    isEdit={isEdit}
+                    confirmLoading={isFetching}
+                    onHandleOk={data => this.onHandleOk(data)}
                     onHandleCancel={() => this.onHandleCancel()}
                 />
                 <div style={{padding: '10px'}}>
-                    <Button className="editable-add-btn" type="primary" onClick={this.onAdd}>添加</Button>
+                    <Button className="editable-add-btn" type="primary" onClick={e => this.onAdd(e)}>添加</Button>
                 </div>
-                <Table bordered dataSource={list} columns={columns} pagination={false} />
+                <Table bordered dataSource={dataSource} columns={columns} pagination={false} />
             </div>
-        )
+        );
     }
 }
-
 
 
 const customPanelStyle = {
@@ -271,7 +268,7 @@ class FullStation extends Component {
                     <CompanyName data={baseinfo.name} dispatch={dispatch}/>
                 </Panel>
                 <Panel header={<span style={{fontWeight: 600}}>友情链接设置</span>} key="2" style={customPanelStyle}>
-                    <FriendlyLink data={baseinfo.friendLink} dispatch={dispatch}/>
+                    <FriendlyLink friendLink={baseinfo.friendLink} dispatch={dispatch}/>
                 </Panel>
                 <Panel header={<span style={{fontWeight: 600}}>技术支持设置</span>} key="3" style={customPanelStyle}>
                 </Panel>

@@ -7,14 +7,8 @@ export function getBaseinfo(data) {
         data
     }
 }
-
+// 公司名称相关Action
 export const initCompanyName = () => dispatch => {
-    // dispatch({
-    //     type: ActionTypes.INITCOMPANYNAME,
-    //     payload: {
-    //         isFetching: true,
-    //     }
-    // });
 
     fetch('/api/sysconfig/getCompanyName')
         .then(response => response.json())
@@ -33,7 +27,7 @@ export const initCompanyName = () => dispatch => {
                     type: ActionTypes.INITCOMPANYNAME_SUCCESS,
                     payload: {
                         isFetching: false,
-                        data: json.data
+                        data: json.data['s_value']
                     }
                 });
             }
@@ -113,55 +107,180 @@ export const saveCompanyName = data => dispatch => {
         });
 }
 
-var key = 100;
-
-export const addFriendLink = data => dispatch => {
-    dispatch(asyncAddFriendLink(data));
-    return fetch('/api/admin/')
-        .then(response => response.json())
+// 友情链接相关Action
+export const initFriendLink = () => dispatch => {
+    fetch('/api/sysconfig/listFriendLink')
+        .then(res => res.json())
         .then(json => {
-            dispatch(asyncAddFriendLink(json));
+            dispatch({
+                type: ActionTypes.INITFRIENDLINK_SUCCESS,
+                payload: {
+                    data: json.data
+                }
+            })
         }).catch(err => {
-            dispatch(asyncAddFriendLink(err));
+            dispatch({
+                type: ActionTypes.INITFRIENDLINK_FAILURE,
+                payload: {
+                    err: err
+                },
+            })
         })
 }
 
-export const asyncAddFriendLink = data => {
-    key++;
-    data.key = key;
+export const addFriendLink = () => {
     return {
         type: ActionTypes.ADDFRIENDLINK,
-        changeId: -1,
-        showModal: false,
-        data: data
+        payload: {
+            isEdit: true,
+            changeId: -1
+        }
     }
 }
 
-export const editFriendLink = (index, data) => {
-    key++;
-    data.key = key;
+export const editFriendLink = (bool, index) => {
     return {
         type: ActionTypes.EDITFRIENDLINK,
-        changeId: index,
-        showModal: false,
-        data: data
+        payload: {
+            isEdit: bool,
+            changeId: index === undefined ? -1 : index
+        }
     }
 }
 
-
-export function showModal(data) {
-
-    return {
-        type: ActionTypes.SHOWMODAL,
-        showModal: true,
-        changeId: data === undefined ? -1 : data
-    }
+export const saveFriendLink = (oldData, data) => dispatch => {
+    console.log(oldData)
+    dispatch({
+        type: ActionTypes.SAVEFRIENDLINK,
+        payload: {
+            isFetching: true,
+        }
+    })
+    fetch('/api/sysconfig/saveFriendLink', {
+        method: 'POST',
+        headers: new Headers({
+            'Content-Type': 'application/json'
+        }),
+        body: JSON.stringify({
+            id: !!oldData ? oldData['s_id'] : -1, 
+            ...data
+        })
+    }).then(res => res.json())
+        .then(json => {
+            dispatch({
+                type: ActionTypes.SAVEFRIENDLINK_SUCCESS,
+                payload: {
+                    isEdit: false,
+                    isFetching: false,
+                    data: json.data
+                }
+            })
+        }).catch(err => {
+            dispatch({
+                type: ActionTypes.SAVEFRIENDLINK_FAILURE,
+                payload: {
+                    isEdit: false,
+                    isFetching: false,
+                    err: err
+                }
+            })
+        })
 }
 
-export function hideModal(data) {
-    return {
-        type: ActionTypes.HIDEMODAL,
-        showModal: false,
-        changeId: -1,
-    }
+export const delFriendLink = (index, data) => dispatch => {
+    dispatch({
+        type: ActionTypes.DELFRIENDLINK,
+        payload: {
+            isFetching: true
+        }
+    });
+    fetch(`/api/sysconfig/delFriendLink`, {
+        method: 'POST',
+        headers: new Headers({
+            'Content-Type': 'application/json'
+        }),
+        body: JSON.stringify({
+            id: data['s_id']
+        })
+    }).then(res => res.json())
+        .then(json => {
+            if (json.code !== 0) 
+                return dispatch({
+                    type: ActionTypes.DELFRIENDLINK_FAILURE,
+                    payload: {
+                        isFetching: false,
+                        validate: true,
+                        err: json.message
+                    }
+                })
+            dispatch({
+                type: ActionTypes.DELFRIENDLINK_SUCCESS,
+                payload: {
+                    isFetching: false,
+                    id: index
+                }
+            });
+        }).catch(err => {
+            dispatch({
+                type: ActionTypes.DELFRIENDLINK_FAILURE,
+                payload: {
+                    isFetching: false,
+                    validate: true,
+                    err: json.message
+                }
+            });
+        })
 }
+
+// var key = 100;
+
+// export const addFriendLink = data => dispatch => {
+//     dispatch(asyncAddFriendLink(data));
+//     return fetch('/api/admin/')
+//         .then(response => response.json())
+//         .then(json => {
+//             dispatch(asyncAddFriendLink(json));
+//         }).catch(err => {
+//             dispatch(asyncAddFriendLink(err));
+//         })
+// }
+
+// export const asyncAddFriendLink = data => {
+//     key++;
+//     data.key = key;
+//     return {
+//         type: ActionTypes.ADDFRIENDLINK,
+//         changeId: -1,
+//         showModal: false,
+//         data: data
+//     }
+// }
+
+// export const editFriendLink = (index, data) => {
+//     key++;
+//     data.key = key;
+//     return {
+//         type: ActionTypes.EDITFRIENDLINK,
+//         changeId: index,
+//         showModal: false,
+//         data: data
+//     }
+// }
+
+
+// export function showModal(data) {
+
+//     return {
+//         type: ActionTypes.SHOWMODAL,
+//         showModal: true,
+//         changeId: data === undefined ? -1 : data
+//     }
+// }
+
+// export function hideModal(data) {
+//     return {
+//         type: ActionTypes.HIDEMODAL,
+//         showModal: false,
+//         changeId: -1,
+//     }
+// }
