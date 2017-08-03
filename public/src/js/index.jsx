@@ -1,15 +1,14 @@
 /*
     create by Piny
  */
+// 加载React全家桶
 import React from 'react';
 import ReactDOM from 'react-dom';
-
-// import { createStore, combineReducers } from 'redux';
 import { Provider } from 'react-redux';
-
 import { Router, IndexRoute, Route, Link, browserHistory, Redirect} from 'react-router';
 import { syncHistoryWithStore } from 'react-router-redux';
 
+// 加载React样式框架antd
 import 'antd/dist/antd.css';
 
 // redux store
@@ -30,9 +29,8 @@ import PageContact from './components/pagesetting/contact';
 
 // Product 类
 import Product from './components/product/product';
-
-import Classify from './components/product/classify';
-import List from './components/product/list';
+import ProductClassify from './components/product/classify';
+import ProductList from './components/product/productlist';
 import AddProduct from './components/product/addproduct';
 
 // User 类
@@ -60,22 +58,24 @@ ReactDOM.render((
                     <Route path='news' component={ PageNews } />
                     <Route path='service' component={ PageService } />
                     <Route path='contact' component={ PageContact } />
-                    
-                    <Redirect from='*' to='/admin/pagesetting' />
+
+                    <Redirect from='*' to='/pagesetting' />
                 </Route>
-                
-                <Route path='production' component={ Product } >
-                    <Route path='classify' component={ Classify } />
-                    <Route path='list' component={ List } />
+
+                <Route path='production'>
+                    <IndexRoute component={ Product } />
+
+                    <Route path='classify' component={ ProductClassify } />
+                    <Route path='productlist' component={ ProductList } />
                     <Route path='addproduct' component={ AddProduct } />
-                    <Redirect from='*' to='/admin' />
+
+                    <Redirect from='*' to='/production' />
                 </Route>
                 
                 <Route path='user' component={ User } />
                 
-                <Route path='*' component={ Dashboard } />
+                <Redirect from='*' to='/' />
             </Route>
-            <Redirect from='*' to='/admin' />
         </Router>
     </Provider>
 ), document.getElementById('main'));

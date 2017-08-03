@@ -114,7 +114,7 @@ class FriendModal extends Component {
     }
 
     render() {
-        const { title, data, isEdit, confirmLoading } = this.props;
+        const { key, title, data, isEdit, confirmLoading } = this.props;
         this.data = {
             name: data['s_name'] || '',
             address: data['s_value'] || ''
@@ -122,7 +122,9 @@ class FriendModal extends Component {
         console.log(this.data);
 
         return (
-            <Modal title={title}
+            <Modal 
+                key={key}
+                title={title}
                 visible={isEdit}
                 confirmLoading={confirmLoading}
                 onOk={() => this.handleOk()}
@@ -244,7 +246,7 @@ class FriendlyLink extends React.Component {
                 <div style={{padding: '10px'}}>
                     <Button className="editable-add-btn" type="primary" onClick={e => this.onAdd(e)}>添加</Button>
                 </div>
-                <Table bordered dataSource={dataSource} columns={columns} pagination={false} />
+                <Table bordered dataSource={dataSource} columns={columns} pagination={false} size="middle"/>
             </div>
         );
     }

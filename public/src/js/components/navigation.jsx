@@ -50,7 +50,7 @@ export default class Nav extends React.Component {
             link: '/',
             children: [{
                 name: '分类列表',
-                link: '/production/list',
+                link: '/production/productlist',
             }, {
                 name: '商品列表',
                 link: '/production/classify',

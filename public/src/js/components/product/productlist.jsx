@@ -1,26 +1,25 @@
 import React from 'react';
 
 import Radio, { Group } from 'antd/lib/radio'
-// import 'antd/radio/style'
-
-// const RadioGroup = Radio.RadioGroup;
 
 import { Link } from 'react-router';
 
 
-class List extends React.Component {
+export default class ProductList extends React.Component {
     constructor() {
         super();
     }
     state = {
         value: '1'
     }
+    
     onChange = (e) => {
         console.log('radio checked', e.target.value);
         this.setState({
           value: e.target.value,
         });
     }
+
     render() {
         const radioStyle = {
             display: 'block',
@@ -39,4 +38,3 @@ class List extends React.Component {
         )
     }
 }
-export default List
