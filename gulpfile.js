@@ -95,7 +95,7 @@ gulp.task('webpack', (cb) => {
 
 
 gulp.task("express", shell.task([
-    'supervisor -i public -w routes,app.js,utils,database,config -- ./bin/www --dev'
+    'supervisor -i public -w routes,app.js,utils,config -- ./bin/www --dev'
     // 'supervisor -i public -w routes,app.js,utils,database,config -- ./bin/www --dev NODE_ENV=development '
 ]));
 

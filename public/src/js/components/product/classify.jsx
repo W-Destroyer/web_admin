@@ -5,10 +5,12 @@
 import React, { Component }from 'react';
 import { connect } from 'react-redux';
 
-import { Collapse, Table, Input, Button, Popconfirm, Modal, message, Icon } from 'antd/dist/antd';
+import { Collapse, Table, Input, Button, Popconfirm, Modal, message, Icon } from 'antd';
 // import { Table, Icon,  } from 'antd/dist/antd';
 
-import {} from '../../actions/classify';
+import {
+    initClassify
+} from '../../actions/classify';
 
 class Classify extends Component {
     constructor() {
@@ -23,8 +25,8 @@ class Classify extends Component {
             dataIndex: 'describe',
             width: '65%',
             render: (text, record, index) => {
-                var textDOM = <a href={text} target='_black'>{text}</a>;
-                return (<div className="editable-row-text">{ textDOM || text }</div>)
+                // var textDOM = <a href={text} target='_black'>{text}</a>;
+                return (<div className="editable-row-text">{ text }</div>)
             },
         }, {
             title: '操作',
@@ -47,12 +49,32 @@ class Classify extends Component {
         }];
     }
 
+    componentDidMount() {
+        const { dispatch, classify } = this.props;
+        if (!classify.data.length)
+            dispatch(initClassify())
+    }
 
+    onAdd() {
+
+    }
 
     render() {
+        var { classify } = this.props;
+        var dataSource = classify.data.map((item, index) => {
+            return {
+                key: index,
+                typename: item['t_typename'],
+                describe: item['t_desp']
+            }
+        })
         return (
-            <div>
-                <Table bordered dataSource={[{key: '11', typename: "1234567", describe: '1234567890-'}]} rowSelection={{}} columns={this.columns} pagination={false} size="middle"/>
+            <div >
+                <div style={{padding: '10px 0'}}>
+                    <Button className="editable-add-btn" style={{marginRight: '20px'}} type="primary" onClick={e => this.onAdd(e)}>添加</Button>
+                    <Button className="editable-delete-btn" type="primary" onClick={e => this.onAdd(e)}>删除</Button>
+                </div>
+                <Table bordered dataSource={dataSource} rowSelection={{}} columns={this.columns} pagination={false} size="middle"/>
             </div>
         )
     }
@@ -61,7 +83,7 @@ class Classify extends Component {
 const mapStateToProps = (state, ownProps) => {
 
     return {
-        classify: state.classify
+        classify: state.commodity.classify
     }
 }
 

@@ -4,7 +4,7 @@
  */
 import React, { Component } from 'react';
 
-import { Collapse } from 'antd/dist/antd';
+import { Collapse } from 'antd';
 const Panel = Collapse.Panel;
 
 const text = `

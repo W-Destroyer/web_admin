@@ -8,7 +8,7 @@ import { push } from 'react-router-redux';
 // import Body from './body';
 // import Notify from 'module/notify/index';
 
-import { Layout, Breadcrumb, Icon} from 'antd/dist/antd';
+import { Layout, Breadcrumb, Icon} from 'antd';
 const { Footer, Sider, Content } = Layout;
 
 import { connect } from 'react-redux';
@@ -81,7 +81,7 @@ class App extends Component {
                         <Layout className='content'>
                             <Content className='container'>
                                 <HeaderBreadcrumb pathname={pathname} />
-                                <section className="container-body" style={{background: '#fff'}}>
+                                <section className="container-body" style={{background: '#fff', minHeight: 400}}>
                                     { this.props.children }
                                 </section>
                                 <Footer className='footer' > &copy; {baseinfo.companyName}  <div style={{float: 'right'}}>Power By {baseinfo.authorName}</div></Footer>

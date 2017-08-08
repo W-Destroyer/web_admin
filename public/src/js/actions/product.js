@@ -1,8 +1,53 @@
-export const PRODUCT = 'PRODUCT';
+import * as ActionTypes from '../constants/actiontypes';
 
-export function getProduct(data) {
-    return {
-        type: PRODUCT,
-        data: data
-    }
+export const initProductList = () => dispatch => {
+    dispatch({
+        type: ActionTypes.INITPRODUCTLIST,
+        payload: {
+            isFetching: true
+        }
+    })
+    fetch(`/api/commodity/listProduct?start=0&length=100&type=0`)
+        .then(response => response.json())
+        .then(json => {
+            if(json.code != 0) 
+                return dispatch({
+                    type: ActionTypes.INITPRODUCTLIST_FAILURE,
+                    payload: {
+                        isFetching: false,
+                        invalidate: true,
+                        message: json.message
+                    }
+                })
+            dispatch({
+                type: ActionTypes.INITPRODUCTLIST_SUCCESS,
+                payload: {
+                    isFetching: false,
+                    data: {
+                        list: json.data.productList,
+                        total: json.data.total
+                    }
+                }
+            })
+        }).catch(err => {
+            dispatch({
+                type: ActionTypes.INITPRODUCTLIST_FAILURE,
+                payload: {
+                    invalidate: true,
+                    message: err
+                }
+            })
+        })
+}
+
+export const addProduct = () => dispatch => {
+    dispatch({
+        type: ActionTypes.ADDPRODUCT,
+        payload: {
+            isFetching
+        }
+    });
+
+    // fetch('/api/product/addProduct')
+
 }

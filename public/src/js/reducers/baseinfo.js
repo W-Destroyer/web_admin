@@ -17,77 +17,21 @@ const initialState = {
         isEdit: false,
         changeId: -1,
         data: [],
-        // list: [{
-        //     key: '0',
-        //     name: '淘宝',
-        //     address: 'https://www.taobao.com',
-        // }, {
-        //     key: '1',
-        //     name: '天猫',
-        //     address: 'https://www.tmall.com',
-        // }],
-        // showModal: false,
-        // changeId: -1,
     }
 }
 
 
-export default function (state = initialState, action) {
+export default function baseinfo(state = initialState, action) {
 
     var newState = Object.assign({}, state);
 
-    newState.name = namedCompany(state.name, action);
-    newState.friendLink = friendLink(state.friendLink, action);
+    newState.name = companyNameReducer(state.name, action);
+    newState.friendLink = friendLinkReducer(state.friendLink, action);
 
     return newState;
-
-    switch(action.type) {
-        case ActionTypes.INITCOMPANYNAME:
-            var newState = Object.assign({}, state);
-            newState.name.isFetching = action.isFetching;
-            return newState;
-        case ActionTypes.INITCOMPANYNAME_SUCCESS:
-            var newState = Object.assign({}, state);
-            newState.name.isFetching = action.isFetching;
-            newState.name.data = action.data;
-            return newState;
-        case ActionTypes.INITCOMPANYNAME_FAILUER:
-            var newState = Object.assign({}, state)
-            newState.name.isFetching = action.isFetching;
-            newState.name.invalidate = action.invalidate;
-            newState.name.message = action.data;
-            return newState;
-
-        // case ActionTypes.EDITCOMPANYNAME:
-        //     var newState = Object.assign({}, state);
-
-
-
-        case ActionTypes.SHOWMODAL:
-            var newState = Object.assign({}, state)
-            newState.friendLink.showModal = action.showModal;
-            newState.friendLink.changeId = action.changeId;
-            return newState;
-        case ActionTypes.HIDEMODAL:
-            var newState = Object.assign({}, state)
-            newState.friendLink.showModal = action.showModal;
-            return newState;
-        case ActionTypes.ADDFRIENDLINK:
-            var newState = Object.assign({}, state)
-            newState.friendLink.showModal = action.showModal;
-            newState.friendLink.list.push(action.data);
-            return newState;
-        case ActionTypes.EDITFRIENDLINK:
-            var newState = Object.assign({}, state)
-            newState.friendLink.showModal = action.showModal;
-            newState.friendLink.list[action.changeId] = action.data;
-            return newState;
-        default:
-            return state;
-    }
 }
 
-function namedCompany(state, action) {
+function companyNameReducer(state, action) {
 
     switch(action.type) {
         // 初始化公司名称
@@ -128,7 +72,7 @@ function namedCompany(state, action) {
     }
 }
 
-function friendLink(state, action) {
+function friendLinkReducer(state, action) {
     switch(action.type) {
         case ActionTypes.INITFRIENDLINK:
             return Object.assign({}, state, {

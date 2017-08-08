@@ -7,6 +7,8 @@ router.use('/sysconfig', require('./api/sysconfig'));
 
 router.use('/user', require('./api/user'));
 
-router.use('/product', require('./api/product'));
+router.use('/commodity', require('./api/commodity'));
+
+router.use('/upload', require('./api/upload'));
 
 module.exports = router;

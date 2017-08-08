@@ -6,7 +6,7 @@ import React, { Component } from 'react';
 
 import { connect } from 'react-redux';
 
-import { Collapse, Table, Input, Button, Popconfirm, Modal, message, Icon } from 'antd/dist/antd';
+import { Collapse, Table, Input, Button, Popconfirm, Modal, message, Icon } from 'antd';
 const Panel = Collapse.Panel;
 
 import {
@@ -243,7 +243,7 @@ class FriendlyLink extends React.Component {
                     onHandleOk={data => this.onHandleOk(data)}
                     onHandleCancel={() => this.onHandleCancel()}
                 />
-                <div style={{padding: '10px'}}>
+                <div style={{padding: '10px 0'}}>
                     <Button className="editable-add-btn" type="primary" onClick={e => this.onAdd(e)}>添加</Button>
                 </div>
                 <Table bordered dataSource={dataSource} columns={columns} pagination={false} size="middle"/>

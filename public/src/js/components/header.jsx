@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { Link } from 'react-router';
 
-import { Layout, Menu, Dropdown, Icon } from 'antd/dist/antd';
+import { Layout, Menu, Dropdown, Icon } from 'antd';
 const { Header } = Layout;
 
 export class User extends Component {

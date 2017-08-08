@@ -4,7 +4,7 @@
  */
 import React, { Component } from 'react';
 
-import {Layout} from 'antd/dist/antd';
+import {Layout} from 'antd';
 
 export default class extends Component {
     render() {

@@ -1,83 +1,87 @@
-import React from 'react';
+import React, { Component } from 'react';
 
 import { Link } from 'react-router';
+import { connect } from 'react-redux';
 
-class OperateChildren extends React.Component {
+import { Collapse, Table, Input, Button, Popconfirm, Modal, message, Icon } from 'antd';
+import {
+    initProductList
+} from '../../actions/product';
 
-    render() {
-        var type = this.props.type;
-        console.log(this.props)
-        return (
-            <div className="topbar-right hidden-xs hidden-sm">
-                <a href="javascript:;" id="addClassify" className="btn btn-default btn-sm fw600 ml10">
-                    <span className="fa fa-plus pr5"></span>添加分类
-                </a>
-                <a href="javascript:;" id="delClassify" className="btn btn-default btn-sm fw600 ml10">
-                    <span className="fa fa-minus pr5"></span>删除分类
-                </a>
-                <a href="javascript:;" id="editClassify" className="btn btn-default btn-sm fw600 ml10">
-                    <span className="fa fa-edit pr5"></span>编辑分类
-                </a>
-            </div>
-        )
-    }
-}
 
-export default class Product extends React.Component {
+
+class Product extends Component {
     constructor() {
         super();
+        this.columns = [{
+            title: '分类名称',
+            dataIndex: 'typename',
+            width: '25%',
+            render: (text, record, index) => (<div className="editable-row-text">{ text }</div>),
+        }, {
+            title: '描述',
+            dataIndex: 'describe',
+            width: '65%',
+            render: (text, record, index) => {
+                // var textDOM = <a href={text} target='_black'>{text}</a>;
+                return (<div className="editable-row-text">{ text }</div>)
+            },
+        }, {
+            title: '操作',
+            dataIndex: 'operation',
+            render: (text, record, index) => {
+                return (
+                    <div className="editable-row-operations">
+                        <div>
+                            <a onClick={() => this.onEdit(index)}>
+                                <Icon type="edit" />
+                            </a>
+                            <span>&nbsp;&nbsp;</span>
+                            <Popconfirm title="确定删除？" onConfirm={() => this.onDelete(index)}>
+                                <a><Icon type="delete" /></a>
+                            </Popconfirm>
+                        </div>
+                    </div>
+                );
+            }
+        }];
     }
 
-    state = {
-        tabType: [{
-            type: 'classify',
-            name: '商品分类',
-            href: '/admin/production/classify'
-        }, {
-            type: 'list',
-            name: '商品列表',
-            href: '/admin/production/list'
-        }, {
-            type: 'attr',
-            name: '属性管理',
-            href: '/admin/production/attr'
-        }, {
-            type: 'recommen',
-            name: '商品推荐',
-            href: '/admin/production/recommen'
-        }],
-        tabShowType: 'classify' 
-    };
+    componentDidMount() {
+        const { dispatch } = this.props;
+        dispatch(initClassify())
+    }
 
-    handleClick(e) {
-        console.log(e.target.dataset)
-        this.setState({tabShowType: e.target.dataset.type})
+    onAdd() {
+
     }
 
     render() {
-        var tabShowType = this.state.tabShowType;
-        var listNav = this.state.tabType.map((item, index) => {
-            return (
-                <li className={ tabShowType == item.type ? 'active' : ''} key={item.type} onClick={e => this.handleClick(e)}>
-                    <Link to={ item.href } data-type={item.type} >{ item.name }</Link>
-                </li>
-            )
-        })
-
-        return(
-            <div>
-                <header id="topbar" className="ph10">
-                    <div className="topbar-left">
-                        <ul className="nav nav-list nav-list-topbar pull-left">
-                            { listNav }
-                        </ul>
-                    </div>
-                    <OperateChildren type={tabShowType} />
-                </header>
-                <section>
-                    { this.props.children }
-                </section>
+        // var { classify } = this.props;
+        // var dataSource = classify.data.map((item, index) => {
+        //     return {
+        //         key: index,
+        //         typename: item['t_typename'],
+        //         describe: item['t_desp']
+        //     }
+        // })
+        return (
+            <div >
+                <div style={{padding: '10px 0'}}>
+                    <Button className="editable-add-btn" style={{marginRight: '20px'}} type="primary" onClick={e => this.onAdd(e)}>添加</Button>
+                    <Button className="editable-delete-btn" type="primary" onClick={e => this.onAdd(e)}>删除</Button>
+                </div>
+                <Table bordered dataSource={dataSource} rowSelection={{}} columns={this.columns} pagination={false} size="middle"/>
             </div>
         )
     }
 }
+
+const mapStateToProps = (state, ownProps) => {
+
+    return {
+        product: state.commodity.product
+    }
+}
+
+export default connect(mapStateToProps)(Product)

@@ -9,7 +9,7 @@ import { Router, IndexRoute, Route, Link, browserHistory, Redirect} from 'react-
 import { syncHistoryWithStore } from 'react-router-redux';
 
 // 加载React样式框架antd
-import 'antd/dist/antd.css';
+// import 'antd/dist/antd.css';
 
 // redux store
 import configureStore from './redux/config_store';
@@ -32,6 +32,9 @@ import Product from './components/product/product';
 import ProductClassify from './components/product/classify';
 import ProductList from './components/product/productlist';
 import AddProduct from './components/product/addproduct';
+import EditProduct from './components/product/editproduct';
+import ProductInfo from './components/product/productinfo';
+
 
 // User 类
 import User from './components/user';
@@ -68,6 +71,8 @@ ReactDOM.render((
                     <Route path='classify' component={ ProductClassify } />
                     <Route path='productlist' component={ ProductList } />
                     <Route path='addproduct' component={ AddProduct } />
+                    <Route path='editproduct' component={ EditProduct } />
+                    <Route path='productinfo' component={ ProductInfo } />
 
                     <Redirect from='*' to='/production' />
                 </Route>
