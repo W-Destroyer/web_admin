@@ -24,6 +24,15 @@ router.get('/listProduct', (req, res) => {
             return res.sendJSON(err);
         res.sendJSON(body);
     })
+});
+
+router.post('/addProduct', (req, res) => {
+    var data = req.body;
+    console.log(data);
+    res.sendJSON({
+        code: 0,
+        data: '保存成功'
+    })
 })
 
 module.exports = router;

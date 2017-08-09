@@ -40,8 +40,14 @@ app.set('view engine', 'html');
 app.use(favicon(path.join(__dirname, 'public/src/images', 'favicon.ico')));
 app.use(logger('dev'));
 
-app.use(bodyParser.json());
+// 设置express接收表单大小
+// app.use(express.json({limit: '50mb'}));
+
+app.use(bodyParser.json({
+    limit: '50mb'
+}));
 app.use(bodyParser.urlencoded({
+    limit: '50mb',
     extended: false
 }));
 app.use(cookieParser());

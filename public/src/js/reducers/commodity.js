@@ -16,7 +16,13 @@ const initialState = {
             total: 0
         }
     },
-
+    addProduct: {
+        isFetching: false,
+        invalidate: false,
+        message: '',
+        saveSuccessful: false,
+        data: {}
+    }
 }
 
 export default function commodity(state = initialState, action) {
@@ -24,6 +30,7 @@ export default function commodity(state = initialState, action) {
 
     newState.classify = classifyReducer(state.classify, action);
     newState.product = productReducer(state.product, action);
+    newState.addProduct = addProductReducer(state.addProduct, action);
 
     return newState;
 }
@@ -61,6 +68,15 @@ function productReducer(state, action) {
             return Object.assign({}, state, {
                 ...action.payload
             });
+        default:
+            return state;
+    }
+}
+
+function addProductReducer(state, action) {
+    switch(action.type) {
+        case ActionTypes.ADDPRODUCT:
+            return state;
         default:
             return state;
     }

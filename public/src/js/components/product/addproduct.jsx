@@ -1,6 +1,6 @@
 import { Component } from 'react';
 
-import { Link } from 'react-router';
+// import * as reactRouter from 'react-router';
 import { connect } from 'react-redux';
 
 import { Form, Input, Tooltip, Icon, Cascader, Select, Row, Col, Checkbox, Button, AutoComplete, Upload, Modal } from 'antd';
@@ -8,10 +8,10 @@ const FormItem = Form.Item;
 const Option = Select.Option;
 const AutoCompleteOption = AutoComplete.Option;
 
-import {
-    initClassify
-} from '../../actions/classify';
+import { initClassify } from '../../actions/classify';
+import { addProduct } from '../../actions/product';
 
+// console.log(reactRouter)
 
 class AddProductForm extends Component {
     constructor() {
@@ -20,14 +20,25 @@ class AddProductForm extends Component {
 
     handleSubmit = (e) => {
         e.preventDefault();
+        const { dispatch, router } = this.props;
         this.props.form.validateFieldsAndScroll((err, values) => {
-            if (!err) {
-                console.log('Received values of form: ', values);
-            }
-        });
+            if(err)
+                return console.log(err)
+            console.log(values);
+            dispatch(addProduct(values))
+        })
+    }
+
+    componentDidUpdate() {
+        const { router, addProduct, dispatch } = this.props;
+        if (addProduct.successful === true) {
+            dispatch(saveSuccessful())
+            router.go(-1)
+        }
     }
 
     render() {
+        // console.log(this.props)
         const { dispatch, classify, form } = this.props;
         const { getFieldDecorator, getFieldValue } = form;
         
@@ -432,7 +443,7 @@ class ProductMasterPic extends Component {
     }
     
     normFile(e) {
-        console.log('Upload event:', e);
+        // console.log('Upload event:', e);
         if (Array.isArray(e)) {
             return e;
         }
@@ -440,7 +451,6 @@ class ProductMasterPic extends Component {
     }
 
     imageValidator = (rule, value, callback) => {
-        // console.log(rule, value, callback)
         if(!value.length)
             return callback()
         var imageRegExp = new RegExp('(jpg|jpeg|png|gif|bmp)$');
@@ -456,14 +466,29 @@ class ProductMasterPic extends Component {
         });
     }
 
-    handleChange = ({ fileList }) => this.setState({ fileList })
+    handleChange({file, fileList, event}) {
+        // console.log(file)
+        // console.log(file, fileList, event)
+        this.setState({
+            fileList
+        })
+    }
 
     handleCancel = () => this.setState({ previewVisible: false })
 
+    customUpload = () => {
+        // console.log(arguments)
+    }
+
+    onProgress(e, file) {
+        // console.log(e, file);
+    }
+    setData(file) {
+        return file
+    }
     render() {
         const { getFieldDecorator, formItemLayout } = this.props;
         const { previewVisible, previewImage, fileList } = this.state;
-        console.log(fileList)
 
         const uploadButton = fileList.length < 1 ? (
             <div>
@@ -499,9 +524,11 @@ class ProductMasterPic extends Component {
                         name="logo"
                         action="/api/upload/productImages"
                         listType="picture-card"
-                        fileList={fileList}
+                        data={this.setData}
                         onPreview={this.handlePreview}
-                        onChange={this.handleChange}
+                        onChange={(e) => this.handleChange(e)}
+                        onProgress={(e, file) => this.onProgress(e, file)}
+                        // customRequest={this.customUpload}
                     >{uploadButton}</Upload>
                 )}
                 <Modal visible={previewVisible} footer={null} onCancel={this.handleCancel}>
@@ -575,7 +602,6 @@ class ProductInfoPic extends Component {
                         name="productImages"
                         action="/api/upload/productImages"
                         listType="picture-card"
-                        fileList={fileList}
                         onPreview={this.handlePreview}
                         onChange={this.handleChange}
                     >
@@ -605,7 +631,8 @@ const WrappedAddProductForm = Form.create()(AddProductForm);
 const mapStateToProps = (state, ownProps) => {
 
     return {
-        classify: state.commodity.classify
+        classify: state.commodity.classify,
+        addProduct: state.commodity.addProduct
     }
 }
 

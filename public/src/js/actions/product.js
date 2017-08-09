@@ -40,14 +40,51 @@ export const initProductList = () => dispatch => {
         })
 }
 
-export const addProduct = () => dispatch => {
+export const addProduct = data => dispatch => {
     dispatch({
         type: ActionTypes.ADDPRODUCT,
         payload: {
-            isFetching
+            isFetching: true
         }
     });
+    var productData = data;
+    // console.log(data);
+    fetch('/api/commodity/addProduct', {
+        method: 'POST',
+        headers: new Headers({
+            'Content-Type': 'application/x-www-form-urlencoded'
+        }),
+        body: JSON.stringify(productData)
+    })
+        .then(response => response.json())
+        .then(json => {
+            dispatch({
+                type: ActionTypes.ADDPRODUCT_SUCCESS,
+                payload: {
+                    isFetching: false,
+                    saveSuccessful: true,
+                    data: data
+                }
+            });
+        }).catch(err => {
+            dispatch({
+                type: ActionTypes.ADDPRODUCT_SUCCESS,
+                payload: {
+                    isFetching: false,
+                    saveSuccessful: false,
+                    invalidate: true,
+                    message: err,
+                }
+            });
+        })
+}
 
-    // fetch('/api/product/addProduct')
-
+export const addProductFinished = () => {
+    return {
+        type: ActionTypes.ADDPRODUCTFINISHED,
+        payload: {
+            isFetching: false,
+            saveSuccessful: false
+        }
+    }
 }
