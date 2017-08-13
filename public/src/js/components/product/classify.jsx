@@ -9,7 +9,8 @@ import { Collapse, Table, Input, Button, Popconfirm, Modal, message, Icon } from
 // import { Table, Icon,  } from 'antd/dist/antd';
 
 import {
-    initClassify
+    initClassify,
+    addClassify
 } from '../../actions/classify';
 
 class Classify extends Component {
@@ -75,7 +76,65 @@ class Classify extends Component {
                     <Button className="editable-delete-btn" type="primary" onClick={e => this.onAdd(e)}>删除</Button>
                 </div>
                 <Table bordered dataSource={dataSource} rowSelection={{}} columns={this.columns} pagination={false} size="middle"/>
+                <AddClassifyModal 
+                    key=""
+                    title="添加产品分类"
+                    data={{}}
+                    isEdit={false}
+                    confirmLoading={false}
+                />
             </div>
+        )
+    }
+}
+
+class AddClassifyModal extends Component {
+    constructor() {
+        super();
+    }
+
+    handleOk() {
+
+    }
+
+    handleCancel() {
+
+    }
+
+    handleChange() {
+
+    }
+
+    render() {
+        const {key, title, data, isEdit, confirmLoading} = this.props;
+        this.data = {
+            typename: data['s_name'] || '',
+            describe: data['s_value'] || ''
+        }
+        return (
+            <Modal 
+                key={key}
+                title={title}
+                visible={isEdit}
+                confirmLoading={confirmLoading}
+                onOk={() => this.handleOk()}
+                onCancel={() => this.handleCancel()}
+            >
+                <div>
+                    <div style={{ padding: '5px' }}>分类名称：</div>
+                    <Input
+                        type="text"
+                        defaultValue={this.data.typename}
+                        onChange={e => this.handleChange('typename', e)}
+                    />
+                    <div style={{ padding: '5px' }}>分类描述：</div>
+                    <Input
+                        type="text"
+                        defaultValue={this.data.describe}
+                        onChange={e => this.handleChange('describe', e)}
+                    />
+                </div>
+            </Modal>
         )
     }
 }
