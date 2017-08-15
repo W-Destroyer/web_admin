@@ -89,7 +89,7 @@ class AddProductForm extends Component {
             message.success('添加成功！')
             dispatch(addProductFinished())
             setTimeout(() => {
-                // router.go(-1)
+                router.go(-1)
             }, 1000)
         }
     }
