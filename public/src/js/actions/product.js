@@ -6,7 +6,7 @@ export const initProductList = () => dispatch => {
         payload: {
             isFetching: true
         }
-    })
+    });
     fetch(`/api/commodity/listProduct?start=0&length=100&type=0`)
         .then(response => response.json())
         .then(json => {
@@ -48,22 +48,31 @@ export const addProduct = data => dispatch => {
         }
     });
     var productData = data;
-    // console.log(data);
+    
     fetch('/api/commodity/addProduct', {
         method: 'POST',
         headers: new Headers({
-            'Content-Type': 'application/x-www-form-urlencoded'
+            'Content-Type': 'application/json'
         }),
         body: JSON.stringify(productData)
-    })
-        .then(response => response.json())
+    }).then(response => response.json())
         .then(json => {
+            if (json.code != 0)
+                return dispatch({
+                    type: ActionTypes.ADDPRODUCT_SUCCESS,
+                    payload: {
+                        isFetching: false,
+                        invalidate: false,
+                        invalidate: true,
+                        message: json.message
+                    }
+                });
             dispatch({
                 type: ActionTypes.ADDPRODUCT_SUCCESS,
                 payload: {
                     isFetching: false,
                     saveSuccessful: true,
-                    data: data
+                    data: productData
                 }
             });
         }).catch(err => {

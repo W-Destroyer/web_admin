@@ -27,12 +27,15 @@ router.get('/listProduct', (req, res) => {
 });
 
 router.post('/addProduct', (req, res) => {
-    var data = req.body;
-    console.log(data);
-    res.sendJSON({
-        code: 0,
-        data: '保存成功'
-    })
+    request.post(nws(`/product/addProduct`), {
+        form: {
+            data: JSON.stringify(req.body)
+        }
+    }, (err, result, body) => {
+        if (err)
+            return res.sendJSON(err)
+        res.sendJSON(body);
+    });
 })
 
 module.exports = router;

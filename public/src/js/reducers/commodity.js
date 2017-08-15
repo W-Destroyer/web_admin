@@ -76,7 +76,22 @@ function productReducer(state, action) {
 function addProductReducer(state, action) {
     switch(action.type) {
         case ActionTypes.ADDPRODUCT:
-            return state;
+            return Object.assign({}, state, {
+                ...action.payload
+            });
+        case ActionTypes.ADDPRODUCT_SUCCESS:
+            return Object.assign({}, state, {
+                ...action.payload
+            });
+        case ActionTypes.ADDPRODUCT_FAILURE:
+            return Object.assign({}, state, {
+                ...action.payload
+            });
+
+        case ActionTypes.ADDPRODUCTFINISHED:
+            return Object.assign({}, state, {
+                ...action.payload
+            });
         default:
             return state;
     }

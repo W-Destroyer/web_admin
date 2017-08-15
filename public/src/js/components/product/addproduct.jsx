@@ -3,46 +3,18 @@ import { Component } from 'react';
 // import * as reactRouter from 'react-router';
 import { connect } from 'react-redux';
 
-import { Form, Input, Tooltip, Icon, Cascader, Select, Row, Col, Checkbox, Button, AutoComplete, Upload, Modal } from 'antd';
+import { Form, Input, Tooltip, Icon, Cascader, Select, Row, Col, Checkbox, Button, AutoComplete, Upload, Modal, message } from 'antd';
 const FormItem = Form.Item;
 const Option = Select.Option;
 const AutoCompleteOption = AutoComplete.Option;
 
 import { initClassify } from '../../actions/classify';
-import { addProduct } from '../../actions/product';
-
-// console.log(reactRouter)
+import { addProduct, addProductFinished } from '../../actions/product';
 
 class AddProductForm extends Component {
     constructor() {
         super();
-    }
-
-    handleSubmit = (e) => {
-        e.preventDefault();
-        const { dispatch, router } = this.props;
-        this.props.form.validateFieldsAndScroll((err, values) => {
-            if(err)
-                return console.log(err)
-            console.log(values);
-            dispatch(addProduct(values))
-        })
-    }
-
-    componentDidUpdate() {
-        const { router, addProduct, dispatch } = this.props;
-        if (addProduct.successful === true) {
-            dispatch(saveSuccessful())
-            router.go(-1)
-        }
-    }
-
-    render() {
-        // console.log(this.props)
-        const { dispatch, classify, form } = this.props;
-        const { getFieldDecorator, getFieldValue } = form;
-        
-        const formItemLayout = {
+        this.formItemLayout = {
             labelCol: {
                 xs: {
                     span: 24
@@ -66,8 +38,7 @@ class AddProductForm extends Component {
                 }
             },
         };
-
-        const tailFormItemLayout = {
+        this.tailFormItemLayout = {
             wrapperCol: {
                 xs: {
                     span: 24,
@@ -79,7 +50,56 @@ class AddProductForm extends Component {
                 },
             },
         };
-        
+    }
+
+    handleSubmit = (e) => {
+        e.preventDefault();
+        const { dispatch, router } = this.props;
+        this.props.form.validateFieldsAndScroll((err, values) => {
+            if(err)
+                return console.log(err)
+            console.log(values);
+            dispatch(addProduct({
+                name: values.productName,
+                type: JSON.parse(values.classify),
+                price: values.price,
+                colors: values.colorKeys.map(item => {
+                    return values['colors_' + item]
+                }),
+                sizes: values.sizeKeys.map(item => {
+                    return values['sizes_' + item]
+                }),
+                masterPic: values.masterPic[0].response.data,
+                productImages: values.productImages.map(item => item.response.data),
+                describe: values.describe
+            }))
+        })
+    }
+
+    goBack = (e) => {
+        const { addProduct, router } = this.props;
+        const { isFetching } = addProduct;
+        if (isFetching) return;
+        router.go(-1);
+    }
+
+    componentDidUpdate() {
+        const { router, addProduct, dispatch } = this.props;
+        if (addProduct.saveSuccessful === true) {
+            message.success('添加成功！')
+            dispatch(addProductFinished())
+            setTimeout(() => {
+                // router.go(-1)
+            }, 1000)
+        }
+    }
+
+    render() {
+        const { dispatch, classify, addProduct, form } = this.props;
+        const { getFieldDecorator, getFieldValue } = form;
+        const formItemLayout = this.formItemLayout;
+        const tailFormItemLayout = this.tailFormItemLayout;
+        const isLoading = addProduct.isFetching;
         return (
             <Form onSubmit={this.handleSubmit}>
                 <ProductName 
@@ -129,8 +149,8 @@ class AddProductForm extends Component {
                 />
                 
                 <FormItem {...tailFormItemLayout}>
-                    <Button style={{fontWeight: '300', margin: '0 10px'}} type="primary" htmlType="submit">保存</Button>
-                    <Button style={{fontWeight: '300', margin: '0 10px'}} type="primary" htmlType="submit">取消</Button>
+                    <Button style={{fontWeight: '300', margin: '0 10px'}} type="primary" loading={isLoading} htmlType="submit">保存</Button>
+                    <Button style={{fontWeight: '300', margin: '0 10px'}} type="primary" onClick={this.goBack}>取消</Button>
                 </FormItem>
             </Form>
 
@@ -190,14 +210,14 @@ class ProductType extends Component {
             )
         })
         const classifySelector = getFieldDecorator('classify', {
-            initialValue: classify.data.length ?  classify.data[0]['t_typename'] : '',
+            // initialValue: classify.data.length ? classify.data[0]['t_typename'] : '',
             // initialValue: {},
             rules: [{
                 required: true,
                 message: '请选择产品分类！'
             }]
         })(
-            <Select>
+            <Select placeholder="请选择产品分类！">
                 { classifyOption }
             </Select>
         )
@@ -451,6 +471,8 @@ class ProductMasterPic extends Component {
     }
 
     imageValidator = (rule, value, callback) => {
+        if (!value)
+            return callback();
         if(!value.length)
             return callback()
         var imageRegExp = new RegExp('(jpg|jpeg|png|gif|bmp)$');
@@ -475,110 +497,12 @@ class ProductMasterPic extends Component {
     }
 
     handleCancel = () => this.setState({ previewVisible: false })
-    
-    // option {
-    //    onProgress: (event: { percent: number }): void,
-    //    onError: (event: Error, body?: Object): void,
-    //    onSuccess: (body: Object): void,
-    //    data: Object,
-    //    filename: String,
-    //    file: File,
-    //    withCredentials: Boolean,
-    //    action: String,
-    //    headers: Object,
-    // }
-    
-    getError(option, xhr) {
-        var msg = 'cannot post ' + option.action + ' ' + xhr.status + '\'';
-        var err = new Error(msg);
-        err.status = xhr.status;
-        err.method = 'post';
-        err.url = option.action;
-        return err;
-    }
-
-    getBody(xhr) {
-        var text = xhr.responseText || xhr.response;
-        if (!text) {
-            return text;
-        }
-
-        try {
-            return JSON.parse(text);
-        } catch (e) {
-            return text;
-        }
-    }
-
-    customUpload = (option) => {
-        // console.log(arguments)
-        console.log(option);
-        var xhr = new XMLHttpRequest();
-
-        if (option.onProgress && xhr.upload) {
-            xhr.upload.onprogress = function progress(e) {
-                if (e.total > 0) {
-                    e.percent = e.loaded / e.total * 100;
-                }
-                option.onProgress(e);
-            };
-        }
-
-        var formData = new FormData();
-
-        if (option.data) {
-            Object.keys(option.data).map(function(key) {
-                formData.append(key, option.data[key]);
-            });
-        }
-
-        formData.append(option.filename, option.file);
-
-        xhr.onerror = function error(e) {
-            option.onError(e);
-        };
-
-        xhr.onload = () => {
-            // allow success when 2xx status
-            // see https://github.com/react-component/upload/issues/34
-            if (xhr.status < 200 || xhr.status >= 300) {
-                return option.onError(this.getError(option, xhr), this.getBody(xhr));
-            }
-
-            option.onSuccess(this.getBody(xhr));
-        };
-
-        xhr.open('post', option.action, true);
-
-        // Has to be after `.open()`. See https://github.com/enyo/dropzone/issues/179
-        if (option.withCredentials && 'withCredentials' in xhr) {
-            xhr.withCredentials = true;
-        }
-
-        var headers = option.headers || {};
-
-        // when set headers['X-Requested-With'] = null , can close default XHR header
-        // see https://github.com/react-component/upload/issues/33
-        if (headers['X-Requested-With'] !== null) {
-            xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
-        }
-
-        for (var h in headers) {
-            if (headers.hasOwnProperty(h) && headers[h] !== null) {
-                xhr.setRequestHeader(h, headers[h]);
-            }
-        }
-        xhr.send(formData);
-
-        return {
-            abort: function abort() {
-                xhr.abort();
-            }
-        };
-    }
-
-    setData(file) {
-        return file
+ 
+    setData(data) {
+        return Object.assign({}, data, {
+            type: 'product',
+            title: 'masterPic'
+        })
     }
 
     render() {
@@ -623,7 +547,7 @@ class ProductMasterPic extends Component {
                         onPreview={this.handlePreview}
                         onChange={(e) => this.handleChange(e)}
                         onProgress={(e, file) => this.onProgress(e, file)}
-                        customRequest={this.customUpload}
+                        customRequest={customUploadRequest}
                     >{uploadButton}</Upload>
                 )}
                 <Modal visible={previewVisible} footer={null} onCancel={this.handleCancel}>
@@ -654,6 +578,8 @@ class ProductInfoPic extends Component {
     }
 
     imageValidator = (rule, value, callback) => {
+        if (!value) 
+            return callback()
         if(!value.length)
             return callback()
         var imageRegExp = new RegExp('(jpg|jpeg|png|gif|bmp)$');
@@ -672,6 +598,13 @@ class ProductInfoPic extends Component {
     handleChange = ({ fileList }) => this.setState({ fileList })
 
     handleCancel = () => this.setState({ previewVisible: false })
+
+    setData(data) {
+        return Object.assign({}, data, {
+            type: 'product',
+            title: 'productImages'
+        })
+    }
 
     render() {
         const { getFieldDecorator, formItemLayout } = this.props;
@@ -695,10 +628,12 @@ class ProductInfoPic extends Component {
                 })(
                     <Upload
                         name="productImages"
-                        action="/api/upload/productImages"
+                        action="http://localhost:8080/upload/productImages"
                         listType="picture-card"
+                        data={this.setData}
                         onPreview={this.handlePreview}
                         onChange={this.handleChange}
+                        customRequest={customUploadRequest}
                     >
                         <div>
                             <Icon type="plus" style={{
@@ -718,6 +653,106 @@ class ProductInfoPic extends Component {
                 </Modal>
             </FormItem>
         )
+    }
+}
+
+// option {
+//    onProgress: (event: { percent: number }): void,
+//    onError: (event: Error, body?: Object): void,
+//    onSuccess: (body: Object): void,
+//    data: Object,
+//    filename: String,
+//    file: File,
+//    withCredentials: Boolean,
+//    action: String,
+//    headers: Object,
+// }
+
+function customUploadRequest(option) {
+    console.log(option);
+    var xhr = new XMLHttpRequest();
+
+    if (option.onProgress && xhr.upload) {
+        xhr.upload.onprogress = function progress(e) {
+            if (e.total > 0) {
+                e.percent = e.loaded / e.total * 100;
+            }
+            option.onProgress(e);
+        };
+    }
+
+    var formData = new FormData();
+
+    if (option.data) {
+        Object.keys(option.data).map(function(key) {
+            formData.append(key, option.data[key]);
+        });
+    }
+
+    formData.append(option.filename, option.file);
+
+    xhr.onerror = function error(e) {
+        option.onError(e);
+    };
+
+    xhr.onload = () => {
+        // allow success when 2xx status
+        // see https://github.com/react-component/upload/issues/34
+        if (xhr.status < 200 || xhr.status >= 300) {
+            return option.onError(getError(option, xhr), getBody(xhr));
+        }
+
+        option.onSuccess(getBody(xhr));
+    };
+
+    xhr.open('post', option.action, true);
+
+    // Has to be after `.open()`. See https://github.com/enyo/dropzone/issues/179
+    if (option.withCredentials && 'withCredentials' in xhr) {
+        xhr.withCredentials = true;
+    }
+
+    var headers = option.headers || {};
+
+    // when set headers['X-Requested-With'] = null , can close default XHR header
+    // see https://github.com/react-component/upload/issues/33
+    if (headers['X-Requested-With'] !== null) {
+        xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
+    }
+
+    for (var h in headers) {
+        if (headers.hasOwnProperty(h) && headers[h] !== null) {
+            xhr.setRequestHeader(h, headers[h]);
+        }
+    }
+    xhr.send(formData);
+
+    return {
+        abort: function abort() {
+            xhr.abort();
+        }
+    };
+}
+
+function getError(option, xhr) {
+    var msg = 'cannot post ' + option.action + ' ' + xhr.status + '\'';
+    var err = new Error(msg);
+    err.status = xhr.status;
+    err.method = 'post';
+    err.url = option.action;
+    return err;
+}
+
+function getBody(xhr) {
+    var text = xhr.responseText || xhr.response;
+    if (!text) {
+        return text;
+    }
+
+    try {
+        return JSON.parse(text);
+    } catch (e) {
+        return text;
     }
 }
 
