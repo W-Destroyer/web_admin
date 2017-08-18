@@ -97,3 +97,48 @@ export const addProductFinished = () => {
         }
     }
 }
+
+export const deleteProduct = productIds => dispatch => {
+    dispatch({
+        type: ActionTypes.DELETEPRODUCT,
+        payload: {
+            isFetching: true,
+        }
+    });
+
+    fetch('/api/commodity/deleteProduct/', {
+        method: 'POST',
+        headers: new Headers({
+            'Content-Type': 'applicationi/json'
+        }),
+        body: JSON.stringify(Array.isArray(productIds) ? productIds : [productIds])
+    }).then(response => response.json())
+        .then(json => {
+            if (json.code != 0) {
+                return dispatch({
+                    type: ActionTypes.DELETEPRODUCT_FAILURE,
+                    payload: {
+                        isFetching: false,
+                        invalidate: true,
+                        message: json.message
+                    }
+                })
+            }
+            dispatch({
+                type: ActionTypes.DELETEPRODUCT_SUCCESS,
+                payload: {
+                    isFetchinig: false,
+                    deleteSuccessful: true
+                }
+            })
+        }).catch(err => {
+            dispatch({
+                type: ActionTypes.DELETEPRODUCT_FAILURE,
+                payload: {
+                    isFetching: false,
+                    invalidate: true,
+                    message: err
+                }
+            })
+        })
+}
