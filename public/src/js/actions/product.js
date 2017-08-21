@@ -106,7 +106,7 @@ export const deleteProduct = productIds => dispatch => {
         }
     });
 
-    fetch('/api/commodity/deleteProduct/', {
+    fetch('/api/commodity/deleteProduct', {
         method: 'POST',
         headers: new Headers({
             'Content-Type': 'applicationi/json'

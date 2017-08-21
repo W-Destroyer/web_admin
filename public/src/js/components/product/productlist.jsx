@@ -5,7 +5,8 @@ import { connect } from 'react-redux';
 
 import { Collapse, Table, Input, Button, Popconfirm, Modal, message, Icon } from 'antd';
 import {
-    initProductList
+    initProductList,
+    deleteProduct
 } from '../../actions/product';
 
 class Product extends Component {
@@ -113,7 +114,8 @@ class Product extends Component {
 
     onDelete() {
         var selectedRowsId = this.selectedRows.map(item => item.productId);
-
+        const { dispatch } = this.props;
+        dispatch(deleteProduct(selectedRowsId));
     }
 
     onSelect = (record, selected, selectedRows) => {

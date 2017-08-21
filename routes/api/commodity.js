@@ -38,4 +38,11 @@ router.post('/addProduct', (req, res) => {
     });
 })
 
+router.post('/deleteProduct', (req, res) => {
+    res.sendJSON({
+        code: 0,
+        data: '删除成功！'
+    })
+})
+
 module.exports = router;

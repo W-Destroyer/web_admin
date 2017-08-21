@@ -3,6 +3,10 @@ const _ = require('underscore');
 const { SHA1 } = require('crypto-js');
 
 router.get('/', (req, res) => {
+    return res.sendJSON({
+        code: 0,
+        data: '登录成功'
+    })
     var username = req.query.username;
     var password = req.query.password;
     var userResult = User.find({name: username});
@@ -17,6 +21,13 @@ router.get('/', (req, res) => {
         res.sendJSON(new Error("login error"))
     })
 
+});
+
+router.post('/', (req, res) => {
+    return res.sendJSON({
+        code: 0,
+        data: '登录成功'
+    })
 })
 
 module.exports = router;

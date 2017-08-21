@@ -75,7 +75,7 @@ var config = {
         // test 
 
         // admin 
-        // "login":  './public/src/js/login.jsx',
+        "login":  './public/src/js/login.jsx',
         "index":  './public/src/js/index.jsx'
     },
     output: {
@@ -121,6 +121,7 @@ var config = {
         alias: {
             // 'underscore': 'underscore/underscore.js',
             'cryptoJs': 'crypto-js/crypto-js.js',
+            'axios': 'axios/axios.js',
             // 'react': lib + 'js_components/react/react.js',
             // 'react-dom': lib + 'js_components/react/react-dom.js',
 

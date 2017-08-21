@@ -22,8 +22,22 @@ const initialState = {
         message: '',
         saveSuccessful: false,
         data: {}
+    },
+    deleteProduct: {
+        isFetching: false,
+        invalidate: false,
+        message: '',
+        deleteSuccessful: false
     }
 }
+
+// function initState() {
+//     return {
+//         isFetching: false,
+//         invalidate: false,
+//         message: '',
+//     }
+// }
 
 export default function commodity(state = initialState, action) {
     var newState = Object.assign({}, state);

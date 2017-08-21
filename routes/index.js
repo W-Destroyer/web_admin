@@ -3,7 +3,7 @@ var router = express.Router();
 
 const request = require('request');
 
-router.get('*', (req, res) => {
+router.get('/', (req, res) => {
     res.render('index', {
         title: "admin",
         
