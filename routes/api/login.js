@@ -38,17 +38,17 @@ router.post('/', (req, res) => {
         body: data,
         json: true
     }).then(body => {
-        if (req.body.remember)
-            res.cookie('username', req.body.username)
         if (body.code != 0 )
             return res.sendJSON(body);
+        if (req.body.remember)
+            res.cookie('username', req.body.username);
         res.cookie('token', body.data.token, {
             httpOnly: true
         });
         res.sendJSON({
             code: 0,
             data: '登录成功'
-        })
+        });
     }).catch(err => {
         res.sendJSON(err);
     });
