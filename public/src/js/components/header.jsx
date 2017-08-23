@@ -4,9 +4,21 @@ import { Link } from 'react-router';
 import { Layout, Menu, Dropdown, Icon } from 'antd';
 const { Header } = Layout;
 
+import axios from 'axios';
+
 export class User extends Component {
     constructor() {
         super();
+    }
+
+    logout(e) {
+        axios.post('/api/user/logout').then(body => {
+            if (body.data.code !== 0)
+                return ;
+            window.location.href = '/login';
+        }).catch(err => {
+            console.log(err)
+        })
     }
 
     render() {
@@ -37,7 +49,7 @@ export class User extends Component {
                     <a href="http://www.taobao.com/">个人设置</a>
                 </Menu.Item>
                 <Menu.Divider />
-                <Menu.Item key="3">退出</Menu.Item>
+                <Menu.Item key="3"><span onClick={e => this.logout(e)}>退出</span></Menu.Item>
             </Menu>
         );
 

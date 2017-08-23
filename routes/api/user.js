@@ -1,6 +1,65 @@
 const express = require('express');
 const router = express.Router();
-const CryptoJS = require("crypto-js");
+const { SHA1 } = require('crypto-js');
+const request = require('request');
+const nws = require('../../nws/nws');
+const rp = require('request-promise');
 
+// router.get('/login', (req, res) => {
+//     return res.render('index')
+//     return res.sendJSON({
+//         code: 0,
+//         data: '登录成功'
+//     })
+//     var username = req.query.username;
+//     var password = req.query.password;
+//     var userResult = User.find({name: username});
+//     userResult.then( data => {
+//         if( !!data.length ) return res.sendJSON(new Error("login error"));
+//         if( data[0].password == SHA1(password) ) {
+//             res.sendJSON("login success");
+//         } else {
+//             res.sendJSON(new Error("login error"))
+//         }
+//     }).catch(error => {
+//         res.sendJSON(new Error("login error"))
+//     })
+
+// });
+
+router.post('/login', (req, res) => {
+    var data = {
+        username: req.body.username,
+        password: req.body.password
+    };
+    rp({
+        method: 'POST',
+        uri: nws('/user/login'),
+        body: data,
+        json: true
+    }).then(body => {
+        if (body.code != 0 )
+            return res.sendJSON(body);
+        if (req.body.remember)
+            res.cookie('username', req.body.username);
+        res.cookie('token', body.data.token, {
+            httpOnly: true
+        });
+        res.sendJSON({
+            code: 0,
+            data: '登录成功'
+        });
+    }).catch(err => {
+        res.sendJSON(err);
+    });
+})
+
+router.post('/logout', (req, res) => {
+    res.clearCookie('token');
+    res.sendJSON({
+        code: 0,
+        data: '登出成功'
+    })
+})
 
 module.exports = router;

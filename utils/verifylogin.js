@@ -8,7 +8,7 @@ const nws = require('../nws/nws');
 
 const whiteList = {
     '/login': true,
-    '/api/login': true,
+    '/api/user/login': true,
 }
 
 function verifyLogin() {
@@ -16,28 +16,36 @@ function verifyLogin() {
         if (whiteList[req.path])
             return next();
         var token = req.cookies['token'];
-        if (!token) {
-            if (isApi(req))
-                return res.sendJSON(new Error('请先登录'));
-            else 
-                return res.redirect('/login');
+
+        if (!!token) {
+            console.log('token', token);
+
+            var options = {
+                uri: nws('/user/verifyLogin'),
+                qs: {
+                    token: token
+                },
+                json: true
+            }
+            rp(options).then(body => {
+                console.log(body)
+                if (body.code === 0)
+                    return next();
+                
+                if (isApi(req)) 
+                    return res.sendJSON(body);
+                
+                res.redirect(redirectUrl(req));
+            }).catch(err => {
+                res.sendJSON(err);
+            });
+            return;
         }
-        console.log('token', token)
-        var options = {
-            uri: nws('/user/verifyLogin'),
-            qs: {
-                token: token
-            },
-            json: true
-        }
-        rp(options).then(body => {
-            console.log(typeof body)
-            if (body.code != 0)
-                return res.sendJSON(body)
-            next();
-        }).catch(err => {
-            res.sendJSON(err);
-        });
+
+        if (isApi(req))
+            return res.sendJSON(new Error('请先登录'));
+        
+        res.redirect(redirectUrl(req));
     }
 }
 
@@ -45,6 +53,14 @@ function isApi(req) {
     var path = req.path;
     var reg = new RegExp('^/api/');
     return reg.test(path);
+}
+
+function redirectUrl(req) {
+    var strLogin = '/login';
+    console.log(req.url);
+    if (req.url != '/')
+        strLogin += '?' + encodeURIComponent(req.url);
+    return strLogin;
 }
 
 module.exports = verifyLogin;

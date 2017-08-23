@@ -22,7 +22,7 @@ class NormalLoginForm extends React.Component {
                 password: SHA1(values.password).toString(),
                 remember: values.remember
             }
-            axios.post('/api/login', {
+            axios.post('/api/user/login', {
                 ...data
             }).then(res => {
                 if (res.data.code != 0)
@@ -30,7 +30,9 @@ class NormalLoginForm extends React.Component {
                         message: '登录失败',
                         description: res.data.message
                     });
-                // window.location.href = '/';
+                var search = window.location.search.split('?')[1];
+                var url = !!search ? decodeURIComponent(search) : '/';
+                window.location.href = url;
             }).catch(err => {
                 notification.error({
                     message: '登录失败',
