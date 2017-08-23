@@ -6,7 +6,6 @@ const request = require('request');
 router.get('/', (req, res) => {
     res.render('index', {
         title: "admin",
-        
         preloadedState: {
             username: "Piny",
             userImg: "//localhost:8080/upload/userImg/user.png",
@@ -15,7 +14,8 @@ router.get('/', (req, res) => {
 });
 
 router.get('/login', (req, res) => {
-    res.render('login')
+    res.cookie("token", 'qwertyuiop')
+    res.render('login');
 })
 
 module.exports = router;

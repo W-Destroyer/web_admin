@@ -109,7 +109,12 @@ class Product extends Component {
 
     componentDidMount() {
         const { dispatch } = this.props;
-        dispatch(initProductList())
+        dispatch(initProductList());
+    }
+
+    componentDidUpdate() {
+        // const { deleteProduct } = this.props;
+        // if (deleteProduct.)
     }
 
     onDelete() {

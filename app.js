@@ -10,14 +10,12 @@ var argv = require('yargs').argv;
 /**
  * 请求中间件 
  * @middleware 输出日志文件 打印日志；
- * @verifyLogging  验证前台是否登录；
- * @verifyAdminLoggging 验证管理后台是否登录
+ * @verifyLogin  验证是否登录；
  * @visitCount 请求计数
  */
 
 var middleware = require('./utils/middleware');
-var verifyLogging = require('./utils/login');
-var verifyAdminLogging = require('./utils/adminlogin');
+var verifyLogin = require('./utils/verifylogin');
 var setVisitCount = require('./utils/visitcount');
 
 /**
@@ -69,8 +67,7 @@ if (argv.dev) {
 }
 app.use(setVisitCount());
 app.use(middleware());
-app.use(verifyLogging());
-app.use(verifyAdminLogging());
+app.use(verifyLogin());
 
 /** 
  * 路由控制

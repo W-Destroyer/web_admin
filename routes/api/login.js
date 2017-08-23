@@ -1,8 +1,12 @@
 const router = require('express').Router();
 const _ = require('underscore');
 const { SHA1 } = require('crypto-js');
+const request = require('request');
+const nws = require('../../nws/nws');
+const rp = require('request-promise');
 
 router.get('/', (req, res) => {
+    return res.render('index')
     return res.sendJSON({
         code: 0,
         data: '登录成功'
@@ -24,10 +28,30 @@ router.get('/', (req, res) => {
 });
 
 router.post('/', (req, res) => {
-    return res.sendJSON({
-        code: 0,
-        data: '登录成功'
-    })
+    var data = {
+        username: req.body.username,
+        password: req.body.password
+    };
+    rp({
+        method: 'POST',
+        uri: nws('/user/login'),
+        body: data,
+        json: true
+    }).then(body => {
+        if (req.body.remember)
+            res.cookie('username', req.body.username)
+        if (body.code != 0 )
+            return res.sendJSON(body);
+        res.cookie('token', body.data.token, {
+            httpOnly: true
+        });
+        res.sendJSON({
+            code: 0,
+            data: '登录成功'
+        })
+    }).catch(err => {
+        res.sendJSON(err);
+    });
 })
 
 module.exports = router;

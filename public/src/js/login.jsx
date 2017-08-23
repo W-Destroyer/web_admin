@@ -17,17 +17,20 @@ class NormalLoginForm extends React.Component {
                     message: '登录失败',
                     description: '用户名或密码错误！！！'
                 })
+            var data = {
+                username: values.username,
+                password: SHA1(values.password).toString(),
+                remember: values.remember
+            }
             axios.post('/api/login', {
-                params: {
-                    ...values
-                }
+                ...data
             }).then(res => {
                 if (res.data.code != 0)
                     notification.error({
                         message: '登录失败',
                         description: res.data.message
                     });
-                window.location.href = '/';
+                // window.location.href = '/';
             }).catch(err => {
                 notification.error({
                     message: '登录失败',
@@ -58,7 +61,7 @@ class NormalLoginForm extends React.Component {
                 </div>
                 <Form onSubmit={this.handleSubmit} className="login-form">
                     <FormItem>
-                        {getFieldDecorator('userName', {
+                        {getFieldDecorator('username', {
                             rules: [{ required: true, message: '请输入用户名!' }],
                         })(
                             <Input prefix={<Icon type="user" style={{ fontSize: 13 }} />} placeholder="用户名" />
