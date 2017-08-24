@@ -1,4 +1,4 @@
-import React from 'react';
+import { Component } from 'react';
 
 import { Link } from 'react-router';
 
@@ -6,7 +6,7 @@ import { Menu, Icon } from 'antd';
 const SubMenu = Menu.SubMenu;
 const MenuItemGroup = Menu.ItemGroup;
 
-export default class Nav extends React.Component {
+export default class Nav extends Component {
     state = {
         current: 'item_000',
         openKeys: [],
@@ -54,9 +54,9 @@ export default class Nav extends React.Component {
             }, {
                 name: '商品列表',
                 link: '/production/productlist',
-            }, {
-                name: '商品推荐',
-                link: '/production/recommend',
+            // }, {
+            //     name: '商品推荐',
+            //     link: '/production/recommend',
             },]
         }, {
             name: '新闻管理',

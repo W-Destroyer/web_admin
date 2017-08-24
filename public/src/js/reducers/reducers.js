@@ -11,6 +11,7 @@ var reducers = combineReducers({
     commodity: commodity,
     user: user,
     baseinfo: baseinfo,
+    userinfo: user,
     routing: routerReducer
 })
 

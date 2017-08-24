@@ -7,6 +7,21 @@ const initialState = {
         message: '',
         data: []
     },
+
+    addClassify: {
+        isFetching: false,
+        invalidate: false,
+        message: '',
+        data: {}
+    },
+
+    deleteClassify: {
+        isFetching: false,
+        incalidate: false,
+        message: '',
+        deleteSuccessful: false
+    },
+    
     product: {
         isFetching: false,
         invalidate: false,
@@ -16,6 +31,7 @@ const initialState = {
             total: 0
         }
     },
+    
     addProduct: {
         isFetching: false,
         invalidate: false,
@@ -23,6 +39,7 @@ const initialState = {
         saveSuccessful: false,
         data: {}
     },
+    
     deleteProduct: {
         isFetching: false,
         invalidate: false,

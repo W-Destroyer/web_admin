@@ -10,7 +10,7 @@ export function getBaseinfo(data) {
 // 公司名称相关Action
 export const initCompanyName = () => dispatch => {
 
-    fetch('/api/sysconfig/getCompanyName')
+    fetch('/api/sysconfig/getCompanyName', {credentials: 'include'})
         .then(response => response.json())
         .then(json => {
             if(json.code !== 0) {
@@ -69,7 +69,8 @@ export const saveCompanyName = data => dispatch => {
         }),
         body: JSON.stringify({
             companyName: data
-        })
+        }),
+        credentials: 'include'
     }).then(response => response.json())
         .then(json => {
             if (json.code !== 0) {
@@ -109,7 +110,7 @@ export const saveCompanyName = data => dispatch => {
 
 // 友情链接相关Action
 export const initFriendLink = () => dispatch => {
-    fetch('/api/sysconfig/listFriendLink')
+    fetch('/api/sysconfig/listFriendLink', {credentials: 'include'})
         .then(res => res.json())
         .then(json => {
             dispatch({
@@ -164,7 +165,8 @@ export const saveFriendLink = (oldData, data) => dispatch => {
         body: JSON.stringify({
             id: !!oldData ? oldData['s_id'] : -1, 
             ...data
-        })
+        }),
+        credentials: 'include'
     }).then(res => res.json())
         .then(json => {
             dispatch({
@@ -201,7 +203,8 @@ export const delFriendLink = (index, data) => dispatch => {
         }),
         body: JSON.stringify({
             id: data['s_id']
-        })
+        }),
+        credentials: 'include'
     }).then(res => res.json())
         .then(json => {
             if (json.code !== 0) 

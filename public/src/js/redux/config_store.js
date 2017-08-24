@@ -9,8 +9,6 @@ import reducers from '../reducers/reducers';
 
 import { composeWithDevTools } from 'redux-devtools-extension';
 
-// const loggerMiddlerware = createLogger();
-
 const routerHistoryMiddleware = routerMiddleware(browserHistory)
 
 export default function configureStore(preloadedState) {

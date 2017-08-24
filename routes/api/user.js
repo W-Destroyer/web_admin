@@ -5,28 +5,6 @@ const request = require('request');
 const nws = require('../../nws/nws');
 const rp = require('request-promise');
 
-// router.get('/login', (req, res) => {
-//     return res.render('index')
-//     return res.sendJSON({
-//         code: 0,
-//         data: '登录成功'
-//     })
-//     var username = req.query.username;
-//     var password = req.query.password;
-//     var userResult = User.find({name: username});
-//     userResult.then( data => {
-//         if( !!data.length ) return res.sendJSON(new Error("login error"));
-//         if( data[0].password == SHA1(password) ) {
-//             res.sendJSON("login success");
-//         } else {
-//             res.sendJSON(new Error("login error"))
-//         }
-//     }).catch(error => {
-//         res.sendJSON(new Error("login error"))
-//     })
-
-// });
-
 router.post('/login', (req, res) => {
     var data = {
         username: req.body.username,
@@ -59,7 +37,7 @@ router.post('/logout', (req, res) => {
     res.sendJSON({
         code: 0,
         data: '登出成功'
-    })
+    });
 })
 
 module.exports = router;

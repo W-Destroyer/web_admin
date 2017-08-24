@@ -68,12 +68,12 @@ class App extends Component {
 
     render() {
         
-        const { dispatch, location, baseinfo } = this.props;
+        const { dispatch, location, baseinfo, userinfo } = this.props;
         const { pathname } = location;
         return (
             <div>
                 <Layout style={{overflow: 'hidden'}}>
-                    <Header />
+                    <Header userinfo={userinfo}/>
                     <Layout className='layout'>
                         <Sider className='sider' width='auto'>
                             <Nav params={pathname}/>
@@ -84,7 +84,7 @@ class App extends Component {
                                 <section className="container-body" style={{background: '#fff', minHeight: 400}}>
                                     { this.props.children }
                                 </section>
-                                <Footer className='footer' > &copy; {baseinfo.companyName}  <div style={{float: 'right'}}>Power By {baseinfo.authorName}</div></Footer>
+                                <Footer className='footer' > &copy; 江西艾麦达科技有限公司 <div style={{float: 'right'}}>Power By Piny</div></Footer>
                             </Content>
                         </Layout>
                     </Layout>
@@ -99,7 +99,8 @@ const mapStateToProps = (state, ownProps) => {
         nav: state.nav,
         user: state.user,
         product: state.product,
-        baseinfo: state.baseinfo
+        baseinfo: state.baseinfo,
+        userinfo: state.userinfo
     }
 }
 

@@ -22,6 +22,8 @@ export class User extends Component {
     }
 
     render() {
+        var {userinfo} = this.props;
+
         var userStyle = {
             position: 'absolute',
             top: '0',
@@ -29,38 +31,38 @@ export class User extends Component {
             padding: '0 20px'
 
         }
-        var userImg = {
+        var userImgStyle = {
             width: '40px',
             height: '40px',
             borderRadius: '20px',
             border: '1px solid #e1e1e1',
             margin: '12px',
             float: 'left',
-            background: 'url(/upload/userImg/user.png)',
+            background: `url(${userinfo.userImg})`,
             backgroundSize: 'contain'
         }
 
-        const menu = (
-            <Menu>
-                <Menu.Item key="0">
-                    <a href="http://www.alipay.com/">个人资料</a>
-                </Menu.Item>
-                <Menu.Item key="1">
-                    <a href="http://www.taobao.com/">个人设置</a>
-                </Menu.Item>
-                <Menu.Divider />
-                <Menu.Item key="3"><span onClick={e => this.logout(e)}>退出</span></Menu.Item>
-            </Menu>
-        );
-
         return (
             <div style={userStyle}>
-                <Dropdown overlay={menu} trigger={['click']}>
+                <Dropdown overlay={
+                    <Menu>
+                        <Menu.Item key="0">
+                            <a href="http://www.alipay.com/">个人资料</a>
+                        </Menu.Item>
+                        <Menu.Item key="1">
+                            <a href="http://www.taobao.com/">个人设置</a>
+                        </Menu.Item>
+                        <Menu.Divider />
+                        <Menu.Item key="3">
+                            <a href="javascript:;" onClick={e => this.logout(e)}>退出</a>
+                        </Menu.Item>
+                    </Menu>
+                } trigger={['click']}>
                     <a className="ant-dropdown-link" href="#">
-                        <div style={userImg}></div>
+                        <div style={userImgStyle}></div>
                     </a>
                 </Dropdown>
-                <div style={{float: 'left', margin: '0 12px'}}>Piny</div>
+                <div style={{float: 'left', margin: '0 12px'}}>{userinfo.nickname}</div>
             </div>
         )
     }
@@ -72,7 +74,7 @@ export default class extends Component {
     }
 
     render() {
-
+        var {userinfo} = this.props;
         return (
             <Header className="header">
                 <div className='title'>
@@ -83,7 +85,7 @@ export default class extends Component {
                         江西艾麦达后台管理系统
                     </div>
                 </div>
-                <User />
+                <User userinfo={userinfo}/>
             </Header>
         )
     }

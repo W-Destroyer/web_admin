@@ -7,7 +7,7 @@ export const initClassify = () => dispatch => {
             isFetching: true
         }
     })
-    fetch('/api/commodity/listClassify')
+    fetch('/api/commodity/listClassify', {credentials: 'include'})
         .then(response => response.json())
         .then(json => {
             if(json.code != 0) 

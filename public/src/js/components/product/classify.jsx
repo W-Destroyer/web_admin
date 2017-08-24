@@ -48,6 +48,10 @@ class Classify extends Component {
                 );
             }
         }];
+
+        this.rowSelection = {
+
+        }
     }
 
     componentDidMount() {
@@ -57,7 +61,13 @@ class Classify extends Component {
     }
 
     onAdd() {
+        const { dispatch } = this.props;
+        dispatch(addClassify());
+    }
 
+    onDelete() {
+        const { dispatch } = this.props;
+        dispatch(deleteClassify());
     }
 
     render() {
@@ -73,9 +83,9 @@ class Classify extends Component {
             <div >
                 <div style={{padding: '10px 0'}}>
                     <Button className="editable-add-btn" style={{marginRight: '20px'}} type="primary" onClick={e => this.onAdd(e)}>添加</Button>
-                    <Button className="editable-delete-btn" type="primary" onClick={e => this.onAdd(e)}>删除</Button>
+                    <Button className="editable-delete-btn" type="primary" onClick={e => this.onDelete(e)}>删除</Button>
                 </div>
-                <Table bordered dataSource={dataSource} rowSelection={{}} columns={this.columns} pagination={false} size="middle"/>
+                <Table bordered dataSource={dataSource} rowSelection={this.rowSelection} columns={this.columns} pagination={false} size="middle"/>
                 <AddClassifyModal 
                     key=""
                     title="添加产品分类"
@@ -142,7 +152,9 @@ class AddClassifyModal extends Component {
 const mapStateToProps = (state, ownProps) => {
 
     return {
-        classify: state.commodity.classify
+        classify: state.commodity.classify,
+        addClassify: state.commodity.addClassify,
+        deleteClassify: state.commodity.deleteClassify
     }
 }
 

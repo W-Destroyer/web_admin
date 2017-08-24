@@ -7,7 +7,7 @@ export const initProductList = () => dispatch => {
             isFetching: true
         }
     });
-    fetch(`/api/commodity/listProduct?start=0&length=100&type=0`)
+    fetch(`/api/commodity/listProduct?start=0&length=100&type=0`, {credentials: 'include'})
         .then(response => response.json())
         .then(json => {
             if(json.code != 0) 
@@ -54,7 +54,8 @@ export const addProduct = data => dispatch => {
         headers: new Headers({
             'Content-Type': 'application/json'
         }),
-        body: JSON.stringify(productData)
+        body: JSON.stringify(productData),
+        credentials: 'include'
     }).then(response => response.json())
         .then(json => {
             if (json.code != 0)
@@ -111,7 +112,8 @@ export const deleteProduct = productIds => dispatch => {
         headers: new Headers({
             'Content-Type': 'applicationi/json'
         }),
-        body: JSON.stringify(Array.isArray(productIds) ? productIds : [productIds])
+        body: JSON.stringify(Array.isArray(productIds) ? productIds : [productIds]),
+        credentials: 'include'
     }).then(response => response.json())
         .then(json => {
             if (json.code != 0) {

@@ -39,7 +39,9 @@ import ProductInfo from './components/product/productinfo';
 // User 类
 import User from './components/user';
 
-const store = configureStore();
+var preloadedState = window.preloadedState;
+
+const store = configureStore(preloadedState);
 
 const history = syncHistoryWithStore(browserHistory, store)
 

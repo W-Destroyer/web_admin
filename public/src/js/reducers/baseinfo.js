@@ -17,7 +17,8 @@ const initialState = {
         isEdit: false,
         changeId: -1,
         data: [],
-    }
+    },
+    author: ''
 }
 
 
