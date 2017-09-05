@@ -143,6 +143,7 @@ var config = {
             'webpack-dev-server': 'webpack-dev-server',
 
             'module': 'js/module',
+            'utils': 'js/utils',
         },
         extensions: ['.js', '.html', '.jsx', '.json', '.ejs']
     },

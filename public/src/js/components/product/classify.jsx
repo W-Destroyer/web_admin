@@ -6,11 +6,14 @@ import React, { Component }from 'react';
 import { connect } from 'react-redux';
 
 import { Collapse, Table, Input, Button, Popconfirm, Modal, message, Icon } from 'antd';
-// import { Table, Icon,  } from 'antd/dist/antd';
 
 import {
     initClassify,
-    addClassify
+    addClassify,
+    editClassify,
+    saveClassify,
+    deleteClassify,
+    cancelClassifyModal
 } from '../../actions/classify';
 
 class Classify extends Component {
@@ -24,7 +27,7 @@ class Classify extends Component {
         }, {
             title: '描述',
             dataIndex: 'describe',
-            width: '65%',
+            width: '60%',
             render: (text, record, index) => {
                 // var textDOM = <a href={text} target='_black'>{text}</a>;
                 return (<div className="editable-row-text">{ text }</div>)
@@ -52,12 +55,25 @@ class Classify extends Component {
         this.rowSelection = {
 
         }
+
+        this.classifyModalKey = 0;
+    }
+
+    componentWillReceiveProps(nextProps) {
+        if (nextProps.classify.isEdit && this.props.classify.changeId !== nextProps.classify.changeId)
+            this.classifyModalKey++;
     }
 
     componentDidMount() {
         const { dispatch, classify } = this.props;
         if (!classify.data.length)
-            dispatch(initClassify())
+            dispatch(initClassify());
+    }
+
+    componentDidUpdate() {
+        const { dispatch, classify } = this.props;
+        if (classify.saveSuccessful)
+            dispatch(editClassify(false));
     }
 
     onAdd() {
@@ -65,20 +81,42 @@ class Classify extends Component {
         dispatch(addClassify());
     }
 
+    onEdit(index) {
+        const { dispatch } = this.props;
+        dispatch(editClassify(index));
+    }
+
     onDelete() {
         const { dispatch } = this.props;
         dispatch(deleteClassify());
     }
 
+    onSave = (data) => {
+        const { dispatch } = this.props;
+        dispatch(saveClassify(data));
+    }
+
+    onCancel = () => {
+        const { dispatch } = this.props;
+        dispatch(cancelClassifyModal());
+    }
+
     render() {
         var { classify } = this.props;
+        var { isEdit, changeId, isFetching } = classify;
+        
         var dataSource = classify.data.map((item, index) => {
             return {
                 key: index,
                 typename: item['t_typename'],
                 describe: item['t_desp']
             }
-        })
+        });
+        var editData = dataSource[changeId] || {
+            id: changeId,
+            typename: '',
+            describe: ''
+        }
         return (
             <div >
                 <div style={{padding: '10px 0'}}>
@@ -87,11 +125,13 @@ class Classify extends Component {
                 </div>
                 <Table bordered dataSource={dataSource} rowSelection={this.rowSelection} columns={this.columns} pagination={false} size="middle"/>
                 <AddClassifyModal 
-                    key=""
+                    modalKey={this.classifyModalKey}
                     title="添加产品分类"
-                    data={{}}
-                    isEdit={false}
-                    confirmLoading={false}
+                    data={editData}
+                    isEdit={isEdit}
+                    onOk={this.onSave}
+                    onCancel={this.onCancel}
+                    confirmLoading={isFetching}
                 />
             </div>
         )
@@ -104,26 +144,26 @@ class AddClassifyModal extends Component {
     }
 
     handleOk() {
-
+        this.props.onOk(this.data);
     }
 
     handleCancel() {
-
+        this.props.onCancel();
     }
 
-    handleChange() {
-
+    handleChange(key, value) {
+        this.data[key] = value;
     }
 
     render() {
-        const {key, title, data, isEdit, confirmLoading} = this.props;
+        const { modalKey, title, data, isEdit, confirmLoading } = this.props;
         this.data = {
-            typename: data['s_name'] || '',
-            describe: data['s_value'] || ''
+            typename: data['typename'] || '',
+            describe: data['describe'] || ''
         }
         return (
             <Modal 
-                key={key}
+                key={modalKey}
                 title={title}
                 visible={isEdit}
                 confirmLoading={confirmLoading}
@@ -135,13 +175,14 @@ class AddClassifyModal extends Component {
                     <Input
                         type="text"
                         defaultValue={this.data.typename}
-                        onChange={e => this.handleChange('typename', e)}
+                        onChange={e => this.handleChange('typename', e.target.value)}
                     />
                     <div style={{ padding: '5px' }}>分类描述：</div>
                     <Input
-                        type="text"
+                        type="textarea"
+                        style={{height: '100px'}}
                         defaultValue={this.data.describe}
-                        onChange={e => this.handleChange('describe', e)}
+                        onChange={e => this.handleChange('describe', e.target.value)}
                     />
                 </div>
             </Modal>
@@ -153,8 +194,6 @@ const mapStateToProps = (state, ownProps) => {
 
     return {
         classify: state.commodity.classify,
-        addClassify: state.commodity.addClassify,
-        deleteClassify: state.commodity.deleteClassify
     }
 }
 

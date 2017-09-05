@@ -26,7 +26,7 @@ class NormalLoginForm extends React.Component {
                 ...data
             }).then(res => {
                 if (res.data.code != 0)
-                    notification.error({
+                    return notification.error({
                         message: '登录失败',
                         description: res.data.message
                     });

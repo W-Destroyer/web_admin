@@ -3,8 +3,6 @@ import { Menu, Dropdown, Icon } from 'antd';
 
 import { Link } from 'react-router';
 
-
-
 export default class User extends React.Component {
     constructor() {
         super();

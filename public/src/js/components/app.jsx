@@ -84,7 +84,7 @@ class App extends Component {
                                 <section className="container-body" style={{background: '#fff', minHeight: 400}}>
                                     { this.props.children }
                                 </section>
-                                <Footer className='footer' > &copy; 江西艾麦达科技有限公司 <div style={{float: 'right'}}>Power By Piny</div></Footer>
+                                <Footer className='footer' style={{textAlign: 'center'}}> &copy; 江西艾麦达科技有限公司 Power By Piny</Footer>
                             </Content>
                         </Layout>
                     </Layout>

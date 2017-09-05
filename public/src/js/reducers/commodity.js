@@ -5,23 +5,11 @@ const initialState = {
         isFetching: false,
         invalidate: false,
         message: '',
+        isEdit: false,
+        changeId: -1,
         data: []
     },
 
-    addClassify: {
-        isFetching: false,
-        invalidate: false,
-        message: '',
-        data: {}
-    },
-
-    deleteClassify: {
-        isFetching: false,
-        incalidate: false,
-        message: '',
-        deleteSuccessful: false
-    },
-    
     product: {
         isFetching: false,
         invalidate: false,
@@ -80,6 +68,48 @@ function classifyReducer(state, action) {
             return Object.assign({}, state, {
                 ...action.payload
             });
+
+        case ActionTypes.ADDCLASSIFY: 
+            return Object.assign({}, state, {
+                ...action.payload
+            });
+
+        case ActionTypes.EDITCLASSIFY:
+            return Object.assign({}, state, {
+                ...action.payload
+            });
+
+        case ActionTypes.SAVECLASSIFY: 
+            return Object.assign({}, state, {
+                ...action.payload
+            });
+        case ActionTypes.SAVECLASSIFY_FAILURE:
+            return Object.assign({}, state, {
+                ...action.payload
+            });
+        case ActionTypes.SAVECLASSIFY_SUCCESS:
+            return Object.assign({}, state, {
+                ...action.payload
+            });
+
+        case ActionTypes.DELETECLASSIFY:
+            return Object.assign({}, state, {
+                ...action.payload
+            });
+        case ActionTypes.DELETECLASSIFY_FAILURE:
+            return Object.assign({}, state, {
+                ...action.payload
+            });
+        case ActionTypes.DELETECLASSIFY_SUCCESS:
+            return Object.assign({}, state, {
+                ...action.payload
+            });
+
+        case ActionTypes.CANCELCLASSIFYMODAL: 
+            return Object.assign({}, state, {
+                ...action.payload
+            });
+            
         default:
             return state;
     }
