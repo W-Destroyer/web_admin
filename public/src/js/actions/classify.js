@@ -4,7 +4,7 @@ import fetchRequest from 'utils/fetchrequest';
 
 export const initClassify = () => dispatch => {
     dispatch({
-        type: ActionTypes.INITCLASSIFY,
+        type: ActionTypes.CLASSIFY_FETCH,
         payload: {
             isFetching: true
         }
@@ -14,7 +14,7 @@ export const initClassify = () => dispatch => {
         .then(json => {
             if(json.code != 0) 
                 return dispatch({
-                    type: ActionTypes.INITCLASSIFY_FAILURE,
+                    type: ActionTypes.CLASSIFY_FETCH_FAILURE,
                     payload: {
                         isFetching: false,
                         invalidate: true,
@@ -22,7 +22,7 @@ export const initClassify = () => dispatch => {
                     }
                 })
             dispatch({
-                type: ActionTypes.INITCLASSIFY_SUCCESS,
+                type: ActionTypes.CLASSIFY_INIT,
                 payload: {
                     isFetching: false,
                     data: json.data
@@ -30,7 +30,7 @@ export const initClassify = () => dispatch => {
             })
         }).catch(err => {
             dispatch({
-                type: ActionTypes.INITCLASSIFY_FAILURE,
+                type: ActionTypes.CLASSIFY_FETCH_FAILURE,
                 payload: {
                     isFetching: false,
                     invalidate: true,
@@ -42,7 +42,7 @@ export const initClassify = () => dispatch => {
 
 export const addClassify = () => {
     return {
-        type: ActionTypes.ADDCLASSIFY,
+        type: ActionTypes.CLASSIFY_ADD,
         payload: {
             isEdit: true,
             changeId: -1
@@ -52,7 +52,7 @@ export const addClassify = () => {
 
 export const editClassify = index => {
     return {
-        type: ActionTypes.EDITCLASSIFY,
+        type: ActionTypes.CLASSIFY_EDIT,
         payload: {
             isEdit: true,
             changeId: index
@@ -60,48 +60,48 @@ export const editClassify = index => {
     }
 }
 
-export const saveClassify = (data) => dispatch => {
+export const saveClassify = data => dispatch => {
     dispatch({
-        type: ActionTypes.SAVECLASSIFY,
+        type: ActionTypes.CLASSIFY_FETCH,
         payload: {
             isFetching: true
         }
     });
 
-    if (data.id === -1)
-        return fetchRequest.post('/api/commodity/classify').then(body => {
-            if (res.code != 0) {
-                dispatch({
-                    type: ActionTypes.SAVECLASSIFY_FAILURE,
-                    payload: {
-                        isFetching: false,
-                        invalidate: true,
-                        message: res.message
-                    }
-                })
-            }
+    data.id === -1 ? fetchRequest.post('/api/commodity/classify', data).then(res => {
+        if (res.code != 0) {
             dispatch({
-                type: ActionTypes.SAVECLASSIFY_SUCCESS,
-                payload: {
-                    isFetching: false,
-                    saveSuccessful: true,
-                    data: res.data
-                }
-            })
-        }).catch(err => {
-            dispatch({
-                type: ActionTypes.SAVECLASSIFY_FAILURE,
+                type: ActionTypes.CLASSIFY_FETCH_FAILURE,
                 payload: {
                     isFetching: false,
                     invalidate: true,
-                    message: err.message,
+                    message: res.message
                 }
             })
-        });
-    fetchRequest.patch(`/api/commodity/classify/${data.id}`).then(body => {
+        }
+        debugger
+        dispatch({
+            type: ActionTypes.CLASSIFY_SAVE,
+            payload: {
+                isFetching: false,
+                saveSuccessful: true,
+                data: res.data,
+                message: res.message
+            }
+        })
+    }).catch(err => {
+        dispatch({
+            type: ActionTypes.CLASSIFY_FETCH_FAILURE,
+            payload: {
+                isFetching: false,
+                invalidate: true,
+                message: err.message,
+            }
+        })
+    }) : fetchRequest.patch(`/api/commodity/classify/${data.id}`, data).then(res => {
         if (res.code != 0) {
             dispatch({
-                type: ActionTypes.SAVECLASSIFY_FAILURE,
+                type: ActionTypes.CLASSIFY_FETCH_FAILURE,
                 payload: {
                     isFetching: false,
                     invalidate: true,
@@ -110,16 +110,16 @@ export const saveClassify = (data) => dispatch => {
             })
         }
         dispatch({
-            type: ActionTypes.SAVECLASSIFY_SUCCESS,
+            type: ActionTypes.CLASSIFY_SAVE,
             payload: {
                 isFetching: false,
                 saveSuccessful: true,
-                data: res.data
+                messsage: res.data
             }
         })
     }).catch(err => {
         dispatch({
-            type: ActionTypes.SAVECLASSIFY_FAILURE,
+            type: ActionTypes.CLASSIFY_FETCH_FAILURE,
             payload: {
                 isFetching: false,
                 invalidate: true,
@@ -131,7 +131,7 @@ export const saveClassify = (data) => dispatch => {
 
 export const deleteClassify = (ids) => dispatch => {
     dispatch({
-        type: ActionTypes.DELETECLASSIFY,
+        type: ActionTypes.CLASSIFY_FETCH,
         payload: {
             isFetching: true
         }
@@ -139,18 +139,18 @@ export const deleteClassify = (ids) => dispatch => {
     ids = Array.isArray(ids) ? ids : [ids];
     fetchRequest.delete('/api/commodity/classify', {
         ids
-    }).then(body => {
-        if (body.code !== 0)
+    }).then(res => {
+        if (res.code !== 0)
             dispatch({
-                type: ActionTypes.DELETECLASSIFY_FAILURE,
+                type: ActionTypes.CLASSIFY_FETCH_FAILURE,
                 payload: {
                     isFetching: false,
                     invalidate: true,
-                    message: body.message
+                    message: res.message
                 }
             });
         dispatch({
-            type: ActionTypes.DELETECLASSIFY_SUCCESS,
+            type: ActionTypes.CLASSIFY_DELETE,
             payload: {
                 isFetching: false,
                 data: ids
@@ -158,7 +158,7 @@ export const deleteClassify = (ids) => dispatch => {
         })
     }).catch(err => {
         dispatch({
-            type: ActionTypes.DELETECLASSIFY_FAILURE,
+            type: ActionTypes.CLASSIFY_FETCH_FAILURE,
             payload: {
                 isFetching: false,
                 invalidate: true,
@@ -170,7 +170,7 @@ export const deleteClassify = (ids) => dispatch => {
 
 export const cancelClassifyModal = () => {
     return {
-        type: ActionTypes.CANCELCLASSIFYMODAL,
+        type: ActionTypes.CLASSIFY_MODAL_CANCEL,
         payload: {
             isEdit: false
         }
@@ -179,7 +179,7 @@ export const cancelClassifyModal = () => {
 
 export const clearClassifyNotify = () => {
     return {
-        type: ActionTypes.CLEARCLASSIFYNOTIFY,
+        type: ActionTypes.CLASSIFY_NOTIFY_CLEAR,
         payload: {
             saveSuccessful: false,
             invalidate: false,

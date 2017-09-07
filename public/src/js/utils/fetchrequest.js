@@ -50,14 +50,14 @@ fetchRequest.get = function(uri, data) {
     
 }
 
-fetchRequest.post = function(uri, options) {
+fetchRequest.post = function(uri, data) {
 
     var _options = {
         method: 'POST',
         headers: new Headers({
             'Content-Type': 'application/json'
         }),
-        body: JSON.stringify(options.data),
+        body: JSON.stringify(data),
         credentials: 'include'
     }
 

@@ -13,7 +13,8 @@ import {
     editClassify,
     saveClassify,
     deleteClassify,
-    cancelClassifyModal
+    cancelClassifyModal,
+    clearClassifyNotify
 } from '../../actions/classify';
 
 class Classify extends Component {
@@ -72,8 +73,11 @@ class Classify extends Component {
 
     componentDidUpdate() {
         const { dispatch, classify } = this.props;
-        if (classify.saveSuccessful)
-            dispatch(editClassify(false));
+        if (classify.saveSuccessful) {
+            message.success(classify.message);
+            dispatch(cancelClassifyModal());
+            dispatch(clearClassifyNotify())
+        }
     }
 
     onAdd() {
@@ -97,8 +101,10 @@ class Classify extends Component {
     }
 
     onCancel = () => {
-        const { dispatch } = this.props;
-        dispatch(cancelClassifyModal());
+        const { dispatch, classify } = this.props;
+        const { isFetching } = classify;
+        if (!isFetching)
+            dispatch(cancelClassifyModal());
     }
 
     render() {
@@ -108,6 +114,7 @@ class Classify extends Component {
         var dataSource = classify.data.map((item, index) => {
             return {
                 key: index,
+                id: item['t_id'],
                 typename: item['t_typename'],
                 describe: item['t_desp']
             }
@@ -158,6 +165,7 @@ class AddClassifyModal extends Component {
     render() {
         const { modalKey, title, data, isEdit, confirmLoading } = this.props;
         this.data = {
+            id: data['id'] || -1,
             typename: data['typename'] || '',
             describe: data['describe'] || ''
         }

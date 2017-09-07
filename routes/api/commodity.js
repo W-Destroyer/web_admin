@@ -13,6 +13,61 @@ router.get('/classify', (req, res) => {
     }).catch(err => {
         res.sendJSON(err)
     })
+});
+
+router.get('/classify/:id', (req, res) => {
+    // rp()
+})
+var t_id = 100
+router.post('/classify', (req, res) => {
+    t_id++;
+    return res.sendJSON({
+        code: 0,
+        data: {
+            t_id: t_id,
+            t_typename: req.body.typename,
+            t_desp: req.body.describe
+        },
+        message: '保存成功！'
+    })
+    var data = req.body;
+    rp(nws('/classify'), {
+        data: data
+    }).then(body => {
+        res.sendJSON(body);
+    }).catch(err => {
+        res.sendJSON(err);
+    });
+});
+
+router.put('/classify/:id', (req, res) => {
+    var id = req.params.id;
+    var data = req.body.data;
+    rp(nws('/classify/' + id), {
+        data: data
+    }).then(body => {
+        res.sendJSON(body);
+    }).catch(err => {
+        res.sendJSON(body);
+    });
+});
+
+router.patch('/classify/:id', (req, res) => {
+    var id = req.params.id;
+    var data = req.body.data;
+
+    rp.patch(`/classify/${id}`, {
+        data: data
+    }).then(body => {
+        res.sendJSON(body);
+    }).catch(err => {
+        res.sendJSON(err);
+    });
+});
+
+router.delete('/classify/:id', (req, res) => {
+
+    rp.delete('/classify/')
 })
 
 router.get('/listClassify', (req, res) => {

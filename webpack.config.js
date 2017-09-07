@@ -122,6 +122,7 @@ var config = {
             // 'underscore': 'underscore/underscore.js',
             'cryptoJs': 'crypto-js/crypto-js.js',
             'axios': 'axios/axios.js',
+            'lodash': 'lodash/lodash.js',
             // 'react': lib + 'js_components/react/react.js',
             // 'react-dom': lib + 'js_components/react/react-dom.js',
 
