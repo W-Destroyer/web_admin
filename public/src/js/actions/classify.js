@@ -8,36 +8,34 @@ export const initClassify = () => dispatch => {
         payload: {
             isFetching: true
         }
-    })
-    fetch('/api/commodity/listClassify', {credentials: 'include'})
-        .then(response => response.json())
-        .then(json => {
-            if(json.code != 0) 
-                return dispatch({
-                    type: ActionTypes.CLASSIFY_FETCH_FAILURE,
-                    payload: {
-                        isFetching: false,
-                        invalidate: true,
-                        message: json.message
-                    }
-                })
-            dispatch({
-                type: ActionTypes.CLASSIFY_INIT,
-                payload: {
-                    isFetching: false,
-                    data: json.data
-                }
-            })
-        }).catch(err => {
-            dispatch({
+    });
+    fetchRequest.get('/api/commodity/listClassify').then(res => {
+        if (res.code != 0)
+            return dispatch({
                 type: ActionTypes.CLASSIFY_FETCH_FAILURE,
                 payload: {
                     isFetching: false,
                     invalidate: true,
-                    message: msgConstants.networkErr
+                    message: res.message
                 }
             })
+        dispatch({
+            type: ActionTypes.CLASSIFY_INIT,
+            payload: {
+                isFetching: false,
+                data: res.data
+            }
         })
+    }).catch(err => {
+        dispatch({
+            type: ActionTypes.CLASSIFY_FETCH_FAILURE,
+            payload: {
+                isFetching: false,
+                invalidate: true,
+                message: msgConstants.networkErr
+            }
+        })
+    });
 }
 
 export const addClassify = () => {
@@ -45,17 +43,17 @@ export const addClassify = () => {
         type: ActionTypes.CLASSIFY_ADD,
         payload: {
             isEdit: true,
-            changeId: -1
+            changeData: {id: -1}
         }
     }
 }
 
-export const editClassify = index => {
+export const editClassify = data => {
     return {
         type: ActionTypes.CLASSIFY_EDIT,
         payload: {
             isEdit: true,
-            changeId: index
+            changeData: data
         }
     }
 }
@@ -68,53 +66,23 @@ export const saveClassify = data => dispatch => {
         }
     });
 
-    data.id === -1 ? fetchRequest.post('/api/commodity/classify', data).then(res => {
-        if (res.code != 0) {
-            dispatch({
+    fetchRequest.post(data.id === -1 ? '/api/commodity/createClassify' : '/api/commodity/updateClassify', data).then(res => {
+        if (res.code !== 0)
+            return dispatch({
                 type: ActionTypes.CLASSIFY_FETCH_FAILURE,
                 payload: {
                     isFetching: false,
                     invalidate: true,
                     message: res.message
                 }
-            })
-        }
-        debugger
+            });
         dispatch({
             type: ActionTypes.CLASSIFY_SAVE,
             payload: {
                 isFetching: false,
                 saveSuccessful: true,
-                data: res.data,
+                // data: res.data,
                 message: res.message
-            }
-        })
-    }).catch(err => {
-        dispatch({
-            type: ActionTypes.CLASSIFY_FETCH_FAILURE,
-            payload: {
-                isFetching: false,
-                invalidate: true,
-                message: err.message,
-            }
-        })
-    }) : fetchRequest.patch(`/api/commodity/classify/${data.id}`, data).then(res => {
-        if (res.code != 0) {
-            dispatch({
-                type: ActionTypes.CLASSIFY_FETCH_FAILURE,
-                payload: {
-                    isFetching: false,
-                    invalidate: true,
-                    message: res.message
-                }
-            })
-        }
-        dispatch({
-            type: ActionTypes.CLASSIFY_SAVE,
-            payload: {
-                isFetching: false,
-                saveSuccessful: true,
-                messsage: res.data
             }
         })
     }).catch(err => {
@@ -137,11 +105,11 @@ export const deleteClassify = (ids) => dispatch => {
         }
     });
     ids = Array.isArray(ids) ? ids : [ids];
-    fetchRequest.delete('/api/commodity/classify', {
-        ids
+    fetchRequest.post('/api/commodity/deleteClassify', {
+        data: ids
     }).then(res => {
         if (res.code !== 0)
-            dispatch({
+            return dispatch({
                 type: ActionTypes.CLASSIFY_FETCH_FAILURE,
                 payload: {
                     isFetching: false,
@@ -153,9 +121,11 @@ export const deleteClassify = (ids) => dispatch => {
             type: ActionTypes.CLASSIFY_DELETE,
             payload: {
                 isFetching: false,
-                data: ids
+                deleteSuccessful: true,
+                ids: ids,
+                message: res.message || '删除成功！'
             }
-        })
+        });
     }).catch(err => {
         dispatch({
             type: ActionTypes.CLASSIFY_FETCH_FAILURE,
@@ -182,6 +152,7 @@ export const clearClassifyNotify = () => {
         type: ActionTypes.CLASSIFY_NOTIFY_CLEAR,
         payload: {
             saveSuccessful: false,
+            deleteSuccessful: false,
             invalidate: false,
             message: ''
         }

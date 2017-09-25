@@ -5,131 +5,101 @@ const nws = require('../../nws/nws');
 const request = require('request');
 const qs = require('qs');
 
-const rp = require('request-promise');
+const path = require('path');
+const rp = require(path.resolve('utils/request-promise'));
 
-router.get('/classify', (req, res) => {
-    rp(nws('/classify')).then(body => {
-        res.sendJSON(body);
-    }).catch(err => {
-        res.sendJSON(err)
-    })
-});
-
-router.get('/classify/:id', (req, res) => {
-    // rp()
-})
-var t_id = 100
-router.post('/classify', (req, res) => {
-    t_id++;
-    return res.sendJSON({
-        code: 0,
-        data: {
-            t_id: t_id,
-            t_typename: req.body.typename,
-            t_desp: req.body.describe
-        },
-        message: '保存成功！'
-    })
-    var data = req.body;
-    rp(nws('/classify'), {
-        data: data
-    }).then(body => {
-        res.sendJSON(body);
-    }).catch(err => {
-        res.sendJSON(err);
-    });
-});
-
-router.put('/classify/:id', (req, res) => {
-    var id = req.params.id;
-    var data = req.body.data;
-    rp(nws('/classify/' + id), {
-        data: data
-    }).then(body => {
-        res.sendJSON(body);
-    }).catch(err => {
-        res.sendJSON(body);
-    });
-});
-
-router.patch('/classify/:id', (req, res) => {
-    var id = req.params.id;
-    var data = req.body.data;
-
-    rp.patch(`/classify/${id}`, {
-        data: data
-    }).then(body => {
-        res.sendJSON(body);
-    }).catch(err => {
-        res.sendJSON(err);
-    });
-});
-
-router.delete('/classify/:id', (req, res) => {
-
-    rp.delete('/classify/')
-})
-
+/*******************产品分类 CURD Begin*****************************/
 router.get('/listClassify', (req, res) => {
-    request(nws('/classify/listall'), (err, result, body) => {
-        console.log(body)
-        if(err)
-            return res.sendJSON(err);
+    rp(nws('/classify/listall')).then(body => {
         res.sendJSON(body);
+    }).catch(err => {
+        res.sendJSON(err);
     })
 });
 
-router.post('/addClassify', (req, res) => {
-    res.sendJSON({
-        code: 0,
-        data: '添加成功！'
-    })
+router.post('/createClassify', (req, res) => {
+    rp({
+        method: 'POST',
+        uri: nws('/classify/create'),
+        body: req.body,
+        json: true
+    }).then(body => {
+        res.sendJSON(body);
+    }).catch(err => res.sendJSON(err));
 });
 
-router.post('/changeClassify', (req, res) => {
-    res.sendJSON({
-        code: 0,
-        data: '修改成功！'
-    })
+router.post('/updateClassify', (req, res) => {
+    rp({
+        method: 'POST',
+        uri: nws('/classify/update'),
+        body: req.body,
+        json: true
+    }).then(body => {
+        res.sendJSON(body);
+    }).catch(err => res.sendJSON(err));
 });
 
 router.post('/deleteClassify', (req, res) => {
-    res.sendJSON({
-        code: 0,
-        data: '删除成功！'
-    })
-})
+    rp({
+        method: 'POST',
+        uri: nws('/classify/delete'),
+        body: req.body,
+        json: true
+    }).then(body => {
+        res.sendJSON(body);
+    }).catch(err => res.sendJSON(err));
+});
 
+/*******************产品分类 CURD End*****************************/
+
+/*******************产品 CURD Start*****************************/
 router.get('/listProduct', (req, res) => {
     var data = {
         start: req.query.start,
         length: req.query.length,
         type: req.query.type
     }
-    request(nws(`/product/listProduct?start=${req.query.start}&length=${req.query.length}&type=${req.query.type}`), (err, result, body) => {
-        if(err)
-            return res.sendJSON(err);
+
+    rp(nws('/product/listall'), {
+        qs: data
+    }).then(body => {
         res.sendJSON(body);
-    })
+    }).catch(err => res.sendJSON(err));
 });
 
-router.post('/addProduct', (req, res) => {
-    request.post(nws(`/product/addProduct`), {
-        form: {
-            data: JSON.stringify(req.body)
-        }
-    }, (err, result, body) => {
-        if (err)
-            return res.sendJSON(err)
+router.post('/createProduct', (req, res) => {
+    rp({
+        method: 'POST',
+        uri: nws('/product/create'),
+        body: req.body,
+        json: true
+    }).then(body => {
         res.sendJSON(body);
-    });
-})
+    }).catch(err => res.sendJSON(err));
+});
+
+router.post('/updateProduct', (req, res) => {
+    rp({
+        method: 'POST',
+        uri: nws('/commodity/updateProduct'),
+        body: req.body,
+        json: true
+    }).then(body => {
+        res.sendJSON(body);
+    }).catch(err => res.sendJSON(err));
+});
 
 router.post('/deleteProduct', (req, res) => {
-    res.sendJSON({
-        code: 0,
-        data: '删除成功！'
-    })
-})
+    rp({
+        method: 'POST',
+        uri: nws('/product/delete'),
+        body: req.body,
+        json: true
+    }).then(body => {
+        res.sendJSON(body);
+    }).catch(err => res.sendJSON(err));
+});
+
+/*******************产品 CURD End*****************************/
 
 module.exports = router;

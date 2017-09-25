@@ -12,8 +12,10 @@ router.get('/login', (req, res) => {
 
 const whiteList = {
     '/': true,
+    '/pagesetting/fullstation': true,
     '/production/classify': true,
-    '/pagesetting/fullstation': true
+    '/production/productlist': true,
+    '/production/addproduct': true
 }
 
 router.get('*', (req, res, next) => {
@@ -28,7 +30,7 @@ router.get('*', (req, res, next) => {
             preloadedState: preloadedState
         });
     }).then(err => {
-
+        res.redirect('/login');
     });
 });
 
@@ -65,20 +67,5 @@ function getPreloadedState(req) {
         });
     });
 }
-
-// function getUserCurrentInfo(cb) {
-//     var options = {
-//         uri: nws('/user/currentInfo'),
-//         qs: {
-//             token: token
-//         },
-//         json: true
-//     }
-//     rp(options).then(body => {
-//         cb(null, body);
-//     }).catch(err => {
-//         cb(err);
-//     })
-// }
 
 module.exports = router;

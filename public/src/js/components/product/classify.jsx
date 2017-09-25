@@ -5,7 +5,8 @@
 import React, { Component }from 'react';
 import { connect } from 'react-redux';
 
-import { Collapse, Table, Input, Button, Popconfirm, Modal, message, Icon } from 'antd';
+import { Collapse, Table, Input, Button, Popconfirm, Modal, Select, TreeSelect, message, Icon, notification } from 'antd';
+const { Option, OptGroup } = Select;
 
 import {
     initClassify,
@@ -20,49 +21,70 @@ import {
 class Classify extends Component {
     constructor() {
         super();
-        this.columns = [{
-            title: '分类名称',
-            dataIndex: 'typename',
-            width: '25%',
-            render: (text, record, index) => (<div className="editable-row-text">{ text }</div>),
-        }, {
-            title: '描述',
-            dataIndex: 'describe',
-            width: '60%',
-            render: (text, record, index) => {
-                // var textDOM = <a href={text} target='_black'>{text}</a>;
-                return (<div className="editable-row-text">{ text }</div>)
-            },
-        }, {
-            title: '操作',
-            dataIndex: 'operation',
-            render: (text, record, index) => {
-                return (
-                    <div className="editable-row-operations">
-                        <div>
-                            <a onClick={() => this.onEdit(index)}>
-                                <Icon type="edit" />
-                            </a>
-                            <span>&nbsp;&nbsp;</span>
-                            <Popconfirm title="确定删除？" onConfirm={() => this.onDelete(index)}>
-                                <a><Icon type="delete" /></a>
-                            </Popconfirm>
-                        </div>
-                    </div>
-                );
-            }
-        }];
-
-        this.rowSelection = {
-
-        }
-
+        // 私有静态变量
         this.classifyModalKey = 0;
-    }
+        this.modalTitle = '';
 
+        this.tableSelectedRows = [];
+
+        this.tableOptions = {
+            columns: [{
+                title: '分类名称',
+                dataIndex: 'name',
+                width: '25%',
+                render: (text, record, index) => (<span className="editable-row-text">{ text }</span>),
+            }, {
+                title: '描述',
+                dataIndex: 'describe',
+                width: '60%',
+                render: (text, record, index) => {
+                    // var textDOM = <a href={text} target='_black'>{text}</a>;
+                    return (<div className="editable-row-text">{ text }</div>)
+                },
+            }, {
+                title: '操作',
+                dataIndex: 'operation',
+                render: (text, record, index) => {
+                    return (
+                        <div className="editable-row-operations">
+                            <div>
+                                <a onClick={() => this.onEdit(record)}>
+                                    <Icon type="edit" />
+                                </a>
+                                <span>&nbsp;&nbsp;</span>
+                                <Popconfirm title="确定删除？" onConfirm={() => this.deleteClassById([record.id])}>
+                                    <a><Icon type="delete" /></a>
+                                </Popconfirm>
+                            </div>
+                        </div>
+                    );
+                }
+            }],
+            rowSelection: {
+                onSelect: (record, selected, selectRows) => {
+                    this.tableSelectedRows = selectRows;
+                    // console.log('onSelect:', record, selected, selectRows);
+                },
+                onSelectAll: (selected, selectRows, changeRows) => {
+                    this.tableSelectedRows = selectRows;
+                    // console.log('onSelect:', selected, selectRows, changeRows);
+                }
+            },
+            rowKey: record => {
+                return record.id;
+            }
+        }
+    }
+    /*      静态变量   Start             */
+    
+    /*      静态变量   End               */
+    /*      React 生命周期 方法 Start     */
     componentWillReceiveProps(nextProps) {
-        if (nextProps.classify.isEdit && this.props.classify.changeId !== nextProps.classify.changeId)
+        if (nextProps.classify.isEdit && this.props.classify.changeData.id !== nextProps.classify.changeData.id)
             this.classifyModalKey++;
+        if (this.props.classify.saveSuccessful)
+            this.classifyModalKey++;
+
     }
 
     componentDidMount() {
@@ -75,32 +97,67 @@ class Classify extends Component {
         const { dispatch, classify } = this.props;
         if (classify.saveSuccessful) {
             message.success(classify.message);
+
             dispatch(cancelClassifyModal());
-            dispatch(clearClassifyNotify())
+            dispatch(clearClassifyNotify());
+            dispatch(initClassify());
+        }
+        
+        if (classify.deleteSuccessful) {
+            message.success(classify.message);
+            dispatch(initClassify());
+            dispatch(clearClassifyNotify());
+        }
+        
+        if (classify.invalidate) {
+            message.error(classify.message)
+            dispatch(clearClassifyNotify());
+            dispatch(initClassify());
         }
     }
 
-    onAdd() {
+    /*      React 生命周期 方法 End     */
+
+    onAddBtnClick() {
         const { dispatch } = this.props;
+        this.modalTitle = '添加产品分类';
         dispatch(addClassify());
     }
 
-    onEdit(index) {
+    onEdit(classData) {
         const { dispatch } = this.props;
-        dispatch(editClassify(index));
+        this.modalTitle = '编辑产品分类';
+        dispatch(editClassify(classData));
     }
 
-    onDelete() {
+    onDeleteBtnClick(e) {
+        if (!this.tableSelectedRows.length)
+            return message.error('请选择数据进行删除！');
+
+        Modal.confirm({
+            title: '确定删除?',
+            // content: 'Some descriptions',
+            onOk: () => {
+                console.log('OK');
+                var classIds = this.tableSelectedRows.map(row => row.id);
+                this.tableSelectedRows = [];
+                this.deleteClassById(classIds);
+            },
+        })
+        
+    }    
+
+    deleteClassById(classIds) {
         const { dispatch } = this.props;
-        dispatch(deleteClassify());
+        dispatch(deleteClassify(classIds));
     }
 
-    onSave = (data) => {
+    onModalSave = (data) => {
         const { dispatch } = this.props;
         dispatch(saveClassify(data));
     }
 
-    onCancel = () => {
+    onModalCancel = () => {
         const { dispatch, classify } = this.props;
         const { isFetching } = classify;
         if (!isFetching)
@@ -109,35 +166,29 @@ class Classify extends Component {
 
     render() {
         var { classify } = this.props;
-        var { isEdit, changeId, isFetching } = classify;
+        var { data, isEdit, changeData, isFetching } = classify;
         
-        var dataSource = classify.data.map((item, index) => {
-            return {
-                key: index,
-                id: item['t_id'],
-                typename: item['t_typename'],
-                describe: item['t_desp']
-            }
-        });
-        var editData = dataSource[changeId] || {
-            id: changeId,
-            typename: '',
-            describe: ''
-        }
         return (
             <div >
                 <div style={{padding: '10px 0'}}>
-                    <Button className="editable-add-btn" style={{marginRight: '20px'}} type="primary" onClick={e => this.onAdd(e)}>添加</Button>
-                    <Button className="editable-delete-btn" type="primary" onClick={e => this.onDelete(e)}>删除</Button>
+                    <Button className="editable-add-btn" style={{marginRight: '20px'}} type="primary" onClick={e => this.onAddBtnClick(e)}>添加</Button>
+                    <Button className="editable-delete-btn" type="primary" onClick={e => this.onDeleteBtnClick(e)}>删除</Button>
                 </div>
-                <Table bordered dataSource={dataSource} rowSelection={this.rowSelection} columns={this.columns} pagination={false} size="middle"/>
+                <Table 
+                    bordered
+                    dataSource={data}
+                    pagination={false}
+                    size="middle"
+                    {...this.tableOptions}
+                />
                 <AddClassifyModal 
                     modalKey={this.classifyModalKey}
-                    title="添加产品分类"
-                    data={editData}
+                    title={this.modalTitle}
+                    data={changeData}
+                    parentData={data}
                     isEdit={isEdit}
-                    onOk={this.onSave}
-                    onCancel={this.onCancel}
+                    onOk={this.onModalSave}
+                    onCancel={this.onModalCancel}
                     confirmLoading={isFetching}
                 />
             </div>
@@ -163,12 +214,32 @@ class AddClassifyModal extends Component {
     }
 
     render() {
-        const { modalKey, title, data, isEdit, confirmLoading } = this.props;
-        this.data = {
-            id: data['id'] || -1,
-            typename: data['typename'] || '',
-            describe: data['describe'] || ''
+        const { modalKey, title, data, parentData, isEdit, confirmLoading } = this.props;
+        this.data = Object.assign({
+            id: -1,
+            name: '',
+            parentId: 0,
+            describe: ''
+        }, data);
+
+        var dataTranslate = (data, index) => {
+            index = index || 0;
+            return data.map(item => {
+                var obj = {
+                    key: item.id,
+                    value: item.id.toString(),
+                    label: item.name,
+                }
+
+                if (!!item.children && index < 1)
+                    obj.children = dataTranslate(item.children, index + 1);
+
+                return obj;
+            });
         }
+
+        var treeData = dataTranslate(parentData);
+
         return (
             <Modal 
                 key={modalKey}
@@ -182,9 +253,19 @@ class AddClassifyModal extends Component {
                     <div style={{ padding: '5px' }}>分类名称：</div>
                     <Input
                         type="text"
-                        defaultValue={this.data.typename}
-                        onChange={e => this.handleChange('typename', e.target.value)}
+                        defaultValue={this.data.name}
+                        onChange={e => this.handleChange('name', e.target.value)}
                     />
+                    <div style={{ padding: '5px' }}>所属分类：</div>
+                    <TreeSelect 
+                        style={{ width: '100%' }}
+                        placeholder='请选择父级分类'
+                        dropdownStyle={{ maxHeight: 400, overflow: 'auto' }}
+                        treeData={treeData}
+                        treeDefaultExpandAll
+                        allowClear
+                        onChange={(value, label, extra) => this.handleChange('parentId', value, label, extra)}
+                    ></TreeSelect>
                     <div style={{ padding: '5px' }}>分类描述：</div>
                     <Input
                         type="textarea"

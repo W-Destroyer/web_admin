@@ -37,7 +37,7 @@ function verifyLogin() {
                 
                 res.redirect(redirectUrl(req));
             }).catch(err => {
-                res.sendJSON(err);
+                res.redirect(redirectUrl(req));
             });
             return;
         }

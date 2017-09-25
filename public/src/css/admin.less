@@ -75,6 +75,21 @@ body {
         bottom: 0;
         border-right: 1px solid @borderColor;
         z-index: 999;
+
+
+        .footer {
+            position: absolute;
+            // left: @siderWidth;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: @white;
+            // width: 100%;
+            padding: 10px;
+            margin-left: 1px;
+            border-top: 1px solid @borderColor;
+            z-index: 999;
+        }
     }
     .content {
         margin-top: @headerHeight;
@@ -99,21 +114,9 @@ body {
         }
 
         .container-body {
-            margin-top: 15px;
+            // margin-top: 15px;
             padding: 10px 20px;
         }
     }
 
-    .footer {
-        position: fixed;
-        left: @siderWidth;
-        right: 0;
-        bottom: 0;
-        background: @white;
-        // width: 100%;
-        padding: 10px 20px;
-        margin-left: 1px;
-        border-top: 1px solid @borderColor;
-        z-index: 999;
-    }
 }

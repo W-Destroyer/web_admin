@@ -1,15 +1,34 @@
 import { Component } from 'react';
-
-// import * as reactRouter from 'react-router';
 import { connect } from 'react-redux';
-
-import { Form, Input, Tooltip, Icon, Cascader, Select, Row, Col, Checkbox, Button, AutoComplete, Upload, Modal, message } from 'antd';
+import {
+    Form,
+    Input,
+    Tooltip,
+    Icon,
+    Cascader,
+    Select,
+    Row,
+    Col,
+    Checkbox,
+    Button,
+    AutoComplete,
+    Upload,
+    Modal,
+    message
+} from 'antd';
 const FormItem = Form.Item;
-const Option = Select.Option;
+const { Option, OptGroup } = Select;
 const AutoCompleteOption = AutoComplete.Option;
 
-import { initClassify } from '../../actions/classify';
-import { addProduct, addProductFinished } from '../../actions/product';
+import {
+    initClassify
+} from '../../actions/classify';
+
+import {
+    addProduct,
+    saveProduct,
+    clearProductAdditionNotify
+} from '../../actions/product';
 
 class AddProductForm extends Component {
     constructor() {
@@ -59,9 +78,9 @@ class AddProductForm extends Component {
             if(err)
                 return console.log(err)
             console.log(values);
-            dispatch(addProduct({
+            dispatch(saveProduct({
                 name: values.productName,
-                type: JSON.parse(values.classify),
+                type: values.classify,
                 price: values.price,
                 colors: values.colorKeys.map(item => {
                     return values['colors_' + item]
@@ -77,29 +96,38 @@ class AddProductForm extends Component {
     }
 
     goBack = (e) => {
-        const { addProduct, router } = this.props;
-        const { isFetching } = addProduct;
+        const { productAddition, router } = this.props;
+        const { isFetching } = productAddition;
         if (isFetching) return;
-        router.go(-1);
+
+        Modal.confirm({
+            title: '确定取消?',
+            onOk: () => {
+                setTimeout(() => {
+                    router.go(-1);
+                }, 200);
+            },
+        });
+        
     }
 
     componentDidUpdate() {
-        const { router, addProduct, dispatch } = this.props;
-        if (addProduct.saveSuccessful === true) {
-            message.success('添加成功！')
-            dispatch(addProductFinished())
+        const { router, productAddition, dispatch } = this.props;
+        if (productAddition.saveSuccessful === true) {
+            message.success(productAddition.message);
+            dispatch(clearProductAdditionNotify());
             setTimeout(() => {
-                router.go(-1)
-            }, 1000)
+                router.go(-1);
+            }, 500)
         }
     }
 
     render() {
-        const { dispatch, classify, addProduct, form } = this.props;
+        const { dispatch, classify, productAddition, form } = this.props;
         const { getFieldDecorator, getFieldValue } = form;
         const formItemLayout = this.formItemLayout;
         const tailFormItemLayout = this.tailFormItemLayout;
-        const isLoading = addProduct.isFetching;
+        const isLoading = productAddition.isFetching;
         return (
             <Form onSubmit={this.handleSubmit}>
                 <ProductName 
@@ -202,22 +230,30 @@ class ProductType extends Component {
         const { getFieldDecorator, formItemLayout, classify } = this.props;
 
         const classifyOption = classify.data.map(item => {
+            
             return (
-                <Option key={item['t_id']} value={JSON.stringify({
-                    id: item['t_id'],
-                    name: item['t_typename']
-                })}>{ item['t_typename'] }</Option>
+                <OptGroup key={item.id} label={item.name}>
+                {
+                    item.children && item.children.map(child => {
+                        return (
+                            <Option key={child.id} value={child.id.toString()} >{ child.name }</Option>
+                        )
+                    })
+                }
+                </OptGroup>
             )
         })
         const classifySelector = getFieldDecorator('classify', {
-            // initialValue: classify.data.length ? classify.data[0]['t_typename'] : '',
-            // initialValue: {},
             rules: [{
                 required: true,
                 message: '请选择产品分类！'
             }]
         })(
-            <Select placeholder="请选择产品分类！">
+            <Select
+                placeholder = "请选择产品分类！"
+                notFoundContent = '暂无分类！'
+                dropdownStyle = {{}}
+            >
                 { classifyOption }
             </Select>
         )
@@ -762,7 +798,7 @@ const mapStateToProps = (state, ownProps) => {
 
     return {
         classify: state.commodity.classify,
-        addProduct: state.commodity.addProduct
+        productAddition: state.commodity.productAddition
     }
 }
 

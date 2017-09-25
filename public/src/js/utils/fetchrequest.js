@@ -1,10 +1,10 @@
 /**
  * [fetchRequest 将fetch重新进行封装，使其更加容易使用]
- * @param  {[String]} uri        [请求接口地址]
+ * @param  {[String]} url        [请求接口地址]
  * @param  {[Object]} options    [请求参数]
  * @return {[Promise]}           [返回Promise对象]
  */
-function fetchRequest(uri, options) {
+function fetchRequest(url, options) {
 
     // 调用原生fetch接口完成异步请求
     var _fetch = !!options ? fetch(url, options) : fetch(url);
@@ -21,7 +21,7 @@ function fetchRequest(uri, options) {
     });
 }
 
-fetchRequest.get = function(uri, data) {
+fetchRequest.get = function(url, data) {
     var _options = {
         method: 'GET',
         headers: new Headers({
@@ -31,7 +31,7 @@ fetchRequest.get = function(uri, data) {
     }
     if (!!data)
         url += '?' + Object.keys(data).map(key => {
-            return key + '=' + value;
+            return key + '=' + data[key];
         }).join('&');
 
     // 调用原生fetch接口完成异步请求
@@ -50,7 +50,7 @@ fetchRequest.get = function(uri, data) {
     
 }
 
-fetchRequest.post = function(uri, data) {
+fetchRequest.post = function(url, data) {
 
     var _options = {
         method: 'POST',
@@ -63,7 +63,7 @@ fetchRequest.post = function(uri, data) {
 
     return new Promise((resolve, reject) => {
         // 调用原生fetch接口完成异步请求
-        fetch(uri, _options).then(response => {
+        fetch(url, _options).then(response => {
             return response.json();
         }).then(json => {
             resolve(json);

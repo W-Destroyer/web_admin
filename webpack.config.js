@@ -27,8 +27,8 @@ var webpackPlugins = [
     new webpack.ProvidePlugin({
         $: 'jquery',
         jQuery: 'jquery',
-        _: 'underscore',
-        "window._": "underscore",
+        _: 'lodash',
+        "window._": "lodash",
         "window.$": "jquery",
         "window.jQuery": 'jquery'
     }),
@@ -114,7 +114,7 @@ var config = {
         'redux': 'Redux',
         'react-redux': 'ReactRedux',
         'react-router-redux': 'ReactRouterRedux',
-        'underscore': '_'
+        'loadsh': '_'
     },
     resolve: {
         modules: [process.cwd() + '/public/src/', process.cwd() + '/node_modules/', process.cwd() + '/public/src/js_components/'],

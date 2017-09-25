@@ -28,7 +28,7 @@ import PageService from './components/pagesetting/service';
 import PageContact from './components/pagesetting/contact';
 
 // Product 类
-import Product from './components/product/product';
+// import Product from './components/product/product';
 import ProductClassify from './components/product/classify';
 import ProductList from './components/product/productlist';
 import AddProduct from './components/product/addproduct';
@@ -47,42 +47,53 @@ const history = syncHistoryWithStore(browserHistory, store)
 
 console.log(store);
 
-ReactDOM.render((
-    <Provider store={store}>
-        <Router history={ history }>
-            <Route path='/' component={ App } >
-                <IndexRoute component={ Dashboard } />
+function render() {
 
-                <Route path='pagesetting'>
-                    <IndexRoute component={ PageFullStation } />
+    ReactDOM.render((
+        <Provider store={store}>
+            <Router history={ history }>
+                <Route path='/' component={ App } >
+                    <IndexRoute component={ Dashboard } />
 
-                    <Route path='fullstation' component={ PageFullStation } />
-                    <Route path='home' component={ PageHome } />
-                    <Route path='company' component={ PageCompany } />
-                    <Route path='production' component={ PageProduction } />
-                    <Route path='news' component={ PageNews } />
-                    <Route path='service' component={ PageService } />
-                    <Route path='contact' component={ PageContact } />
+                    <Route path='pagesetting'>
+                        <IndexRoute component={ PageFullStation } />
 
-                    <Redirect from='*' to='/pagesetting' />
+                        <Route path='fullstation' component={ PageFullStation } />
+                        <Route path='home' component={ PageHome } />
+                        <Route path='company' component={ PageCompany } />
+                        <Route path='production' component={ PageProduction } />
+                        <Route path='news' component={ PageNews } />
+                        <Route path='service' component={ PageService } />
+                        <Route path='contact' component={ PageContact } />
+
+                        <Redirect from='*' to='/pagesetting' />
+                    </Route>
+
+                    <Route path='production'>
+                        <IndexRoute component={ ProductList } />
+
+                        <Route path='classify' component={ ProductClassify } />
+                        <Route path='productlist' component={ ProductList } />
+                        <Route path='addproduct' component={ AddProduct } />
+                        <Route path='editproduct' component={ EditProduct } />
+                        <Route path='productinfo' component={ ProductInfo } />
+
+                        <Redirect from='*' to='/production' />
+                    </Route>
+                    
+                    <Route path='user' component={ User } />
+                    
+                    <Redirect from='*' to='/' />
                 </Route>
+            </Router>
+        </Provider>
+    ), document.getElementById('main'));
+}
 
-                <Route path='production'>
-                    <IndexRoute component={ Product } />
+render();
 
-                    <Route path='classify' component={ ProductClassify } />
-                    <Route path='productlist' component={ ProductList } />
-                    <Route path='addproduct' component={ AddProduct } />
-                    <Route path='editproduct' component={ EditProduct } />
-                    <Route path='productinfo' component={ ProductInfo } />
-
-                    <Redirect from='*' to='/production' />
-                </Route>
-                
-                <Route path='user' component={ User } />
-                
-                <Redirect from='*' to='/' />
-            </Route>
-        </Router>
-    </Provider>
-), document.getElementById('main'));
+// if (module.hot) {
+//   module.hot.accept('./components/App', () => {
+//     render()
+//   });
+// }

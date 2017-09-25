@@ -77,14 +77,18 @@ class App extends Component {
                     <Layout className='layout'>
                         <Sider className='sider' width='auto'>
                             <Nav params={pathname}/>
+                            <Footer className='footer' style={{textAlign: 'center'}}> 
+                                <div>&copy; 江西艾麦达科技有限公司 </div>
+                                <div>Power By Piny</div>
+                            </Footer>
                         </Sider>
                         <Layout className='content'>
                             <Content className='container'>
-                                <HeaderBreadcrumb pathname={pathname} />
+                                {/*<HeaderBreadcrumb pathname={pathname} /> */}
                                 <section className="container-body" style={{background: '#fff', minHeight: 400}}>
                                     { this.props.children }
                                 </section>
-                                <Footer className='footer' style={{textAlign: 'center'}}> &copy; 江西艾麦达科技有限公司 Power By Piny</Footer>
+                                {/*<Footer className='footer' style={{textAlign: 'center'}}> &copy; 江西艾麦达科技有限公司 Power By Piny</Footer>*/}
                             </Content>
                         </Layout>
                     </Layout>

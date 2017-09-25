@@ -9,81 +9,124 @@
  */
 
 export const BASEINFO = 'BASEINFO';
+/***************************************************************/
+/*
+            基础信息 Baseinfo
+*/
+/***************************************************************/
+
+// 标记异步请求 公司名称
+export const COMPANYNAME_FETCH = 'COMPANYNAME_FETCH';
+
+// 请求失败
+export const COMPANYNAME_FETCH_FAILURE = 'COMPANYNAME_FETCH_FAILURE';
 
 // 初始化公司名称
-export const INITCOMPANYNAME = 'INITCOMPANYNAME';
-export const INITCOMPANYNAME_SUCCESS = 'INITCOMPANYNAME_SUCCESS';
-export const INITCOMPANYNAME_FAILUER = 'INITCOMPANYNAME_FAILUER';
+export const COMPANYNAME_INIT = 'COMPANYNAME_INIT';
 
-// 编辑公司名称
-export const EDITCOMPANYNAME = 'EDITCOMPANYNAME';
+// 编辑公司名称 
+export const COMPANYNAME_EDIT = 'COMPANYNAME_EDIT';
 
 // 保存公司名称
-export const SAVECOMPANYNAME = 'SAVECOMPANYNAME';
-export const SAVECOMPANYNAME_SUCCESS = 'SAVECOMPANYNAME_SUCCESS';
-export const SAVECOMPANYNAME_FAILUER = 'SAVECOMPANYNAME_FAILUER';
+export const COMPANYNAME_SAVE = 'COMPANYNAME_SAVE';
 
-// 初始化友情链接
-export const INITFRIENDLINK = 'INITFRIENDLINK';
-export const INITFRIENDLINK_SUCCESS = 'INITFRIENDLINK_SUCCESS';
-export const INITFRIENDLINK_FAILURE = 'INITFRIENDLINK_FAILURE';
+// 退出编辑
+export const COMPANYNAME_EDIT_CANCLE = 'COMPANYNAME_EDIT_CANCLE';
 
-// 编辑友情链接
-export const EDITFRIENDLINK = 'EDITFRIENDLINK';
+// 退出编辑
+export const COMPANYNAME_NOTIFY_CLEAR = 'COMPANYNAME_NOTIFY_CLEAR';
 
-// 添加友情链接
-export const ADDFRIENDLINK = 'ADDFRIENDLINK';
 
-// 保存友情链接
-export const SAVEFRIENDLINK = 'SAVEFRIENDLINK';
-export const SAVEFRIENDLINK_SUCCESS = 'SAVEFRIENDLINK_SUCCESS';
-export const SAVEFRIENDLINK_FAILURE = 'SAVEFRIENDLINK_FAILURE';
+
+// 标记异步请求 友情链接
+export const FRIENDLINK_FETCH = 'FRIENDLINK_FETCH';
+
+// 请求失败
+export const FRIENDLINK_FETCH_FAILURE = 'FRIENDLINK_FETCH_FAILURE';
+
+// 初始化 友情链接
+export const FRIENDLINK_INIT = 'FRIENDLINK_INIT';
+
+// 添加 友情链接
+export const FRIENDLINK_ADD = 'FRIENDLINK_ADD';
+
+// 编辑 友情链接
+export const FRIENDLINK_EDIT = 'FRIENDLINK_EDIT';
+
+// 保存 友情链接
+export const FRIENDLINK_SAVE = 'FRIENDLINK_SAVE';
 
 // 删除友情链接
-export const DELFRIENDLINK = 'DELFRIENDLINK';
-export const DELFRIENDLINK_SUCCESS = 'DELFRIENDLINK_SUCCESS';
-export const DELFRIENDLINK_FAILURE = 'DELFRIENDLINK_FAILURE';
+export const FRIENDLINK_DELETE = 'FRIENDLINK_DELETE';
 
-// 初始化商品分类
-export const INITCLASSIFY = 'INITCLASSIFY';
-export const INITCLASSIFY_FAILURE = 'INITCLASSIFY_FAILURE';
-export const INITCLASSIFY_SUCCESS = 'INITCLASSIFY_SUCCESS';
+// 关闭弹出框
+export const FRIENDLINK_MODAL_CANCEL = 'FRIENDLINK_MODAL_CANCEL';
 
-// 添加商品分类
-export const ADDCLASSIFY = 'ADDCLASSIFY';
+// 清除 提示信息
+export const FRIENDLINK_NOTIFY_CLEAR = 'FRIENDLINK_NOTIFY_CLEAR';
 
-// 编辑商品分类
-export const EDITCLASSIFY = 'EDITCLASSIFY';
+/***************************************************************/
+/*
+            产品分类 Classify
+*/
+/***************************************************************/
 
-// 保存商品分类
-export const SAVECLASSIFY = 'SAVECLASSIFY';
-export const SAVECLASSIFY_FAILURE = 'SAVECLASSIFY_FAILURE';
-export const SAVECLASSIFY_SUCCESS = 'SAVECLASSIFY_SUCCESS';
+// 标记异步请求
+export const CLASSIFY_FETCH = 'CLASSIFY_FETCH';
 
-// 删除商品分类
-export const DELETECLASSIFY = 'DELETECLASSIFY';
-export const DELETECLASSIFY_FAILURE = 'DELETECLASSIFY_FAILURE';
-export const DELETECLASSIFY_SUCCESS = 'DELETECLASSIFY_SUCCESS';
+// 异步请求失败
+export const CLASSIFY_FETCH_FAILURE = 'CLASSIFY_FETCH_FAILURE';
 
-// 关闭商品分类编辑弹出框
-export const CANCELCLASSIFYMODAL = 'CANCELCLASSIFYMODAL';
+// 初始化
+export const CLASSIFY_INIT = 'CLASSIFY_INIT';
+
+// 添加
+export const CLASSIFY_ADD = 'CLASSIFY_ADD';
+
+// 编辑
+export const CLASSIFY_EDIT = 'CLASSIFY_EDIT';
+
+// 保存
+export const CLASSIFY_SAVE = 'CLASSIFY_SAVE';
+
+// 删除
+export const CLASSIFY_DELETE = 'CLASSIFY_DELETE';
+
+// 关闭 编辑/新建 弹出框
+export const CLASSIFY_MODAL_CANCEL = 'CLASSIFY_MODAL_CANCEL';
+
+// 清除 提示信息、初始化状态
+export const CLASSIFY_NOTIFY_CLEAR = 'CLASSIFY_NOTIFY_CLEAR';
+
+/***************************************************************/
+/*
+            产品 Product
+*/
+/***************************************************************/
+// 产品列表 标记异步请求
+export const PRODUCT_LIST_FETCH = 'PRODUCT_LIST_FETCH';
+
+// 列表失败状态
+export const PRODUCT_LIST_FETCH_FAILURE = 'PRODUCT_LIST_FETCH_FAILURE';
+
+// 初始化产品列表 
+export const PRODUCT_LIST_INIT = 'PRODUCT_LIST_INIT';
+
+// 列表删除
+export const PRODUCT_LIST_DELETE = 'PRODUCT_LIST_DELETE';
 
 // 清除提示信息
-export const CLEARCLASSIFYNOTIFY = 'CLEARCLASSIFYNOTIFY';
+export const PRODUCT_LIST_NOTIDY_CLEAR = 'PRODUCT_LIST_NOTIDY_CLEAR';
 
-// 初始化商品列表
-export const INITPRODUCTLIST = 'INITPRODUCTLIST';
-export const INITPRODUCTLIST_FAILURE = 'INITPRODUCTLIST_FAILURE';
-export const INITPRODUCTLIST_SUCCESS = 'INITPRODUCTLIST_SUCCESS';
 
-// 添加商品
-export const ADDPRODUCT = 'ADDPRODUCT';
-export const ADDPRODUCT_FAILURE = 'ADDPRODUCT_FAILURE';
-export const ADDPRODUCT_SUCCESS = 'ADDPRODUCT_SUCCESS';
+// 产品添加页面 标记异步请求
+export const PRODUCT_ADDITION_FETCH = 'PRODUCT_ADDITION_FETCH';
 
-export const ADDPRODUCTFINISHED = 'ADDPRODUCTFINISHED'; 
+// 产品添加页面 请求失败
+export const PRODUCT_ADDITION_FETCH_FAILURE = 'PRODUCT_ADDITION_FETCH_FAILURE';
 
-export const DELETEPRODUCT = 'DELETEPRODUCT';
-export const DELETEPRODUCT_SUCCESS = 'DELETEPRODUCT_SUCCESS';
-export const DELETEPRODUCT_FAILURE = 'DELETEPRODUCT_FAILURE';
+// 产品添加成功
+export const PRODUCT_ADDITION_SAVE = 'PRODUCT_ADDITION_SAVE';
 
+// 清除信息
+export const PRODUCT_ADDITION_NOTIFY_CLEAR = 'PRODUCT_ADDITION_NOTIFY_CLEAR';

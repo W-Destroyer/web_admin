@@ -6,18 +6,23 @@ import React, { Component } from 'react';
 
 import { connect } from 'react-redux';
 
-import { Collapse, Table, Input, Button, Popconfirm, Modal, message, Icon } from 'antd';
+import { Collapse, Table, Input, Button, Popconfirm, Modal, message, Icon, Select } from 'antd';
 const Panel = Collapse.Panel;
+const Option = Select.Option;
 
 import {
     initCompanyName,
     editCompanyName,
     saveCompanyName,
+    cancelCompanyNameEdit,
+    clearCompanyNameNotify,
     initFriendLink,
     editFriendLink,
     addFriendLink,
     saveFriendLink,
-    delFriendLink
+    delFriendLink,
+    cancelFriendLinkModal,
+    clearFriendLinkNotify
 } from '../../actions/baseinfo'
 
 class CompanyName extends Component {
@@ -26,27 +31,33 @@ class CompanyName extends Component {
     }
 
     componentDidMount() {
-        const { dispatch } = this.props;
-        dispatch(initCompanyName());
+        const { data, dispatch } = this.props;
+        if (!data.data)
+            dispatch(initCompanyName());
     }
 
     componentDidUpdate() {
-        var { data } = this.props;
-        message.destroy();
-        if (data.isFetching)
-            message.loading('正在加载');
+        var { data, dispatch } = this.props;
 
-        if (data.invalidate)
+        if (data.saveSuccessful) {
+            message.success(data.message);
+            dispatch(cancelCompanyNameEdit())
+            dispatch(clearCompanyNameNotify())
+            dispatch(initCompanyName());
+        }
+
+        if (data.invalidate) {
             message.error(data.message);
+            dispatch(clearCompanyNameNotify());
+        }
     }
 
     onEdit(e) {
         const { dispatch } = this.props;
-        dispatch(editCompanyName(true));
+        dispatch(editCompanyName());
     }
 
     onChange(e) {
-        console.log(e.target.value);
         this.data = e.target.value;
     }
 
@@ -56,37 +67,44 @@ class CompanyName extends Component {
     }
 
     handleCancel(e) {
-        const { dispatch } = this.props;
-        dispatch(editCompanyName(false))
+        const { data, dispatch } = this.props;
+        if (data.isFetching) return;
+        dispatch(cancelCompanyNameEdit());
     }
 
     render() {
         var { data } = this.props;
         this.data = data.data;
 
-        if (data.isEdit) {
-            return (
-                <div style={{padding: "0 20px"}}>
-                    <div style={{paddingBottom: '10px'}}>
-                        <Input type="text"
-                            defaultValue={data.data}
-                            onChange={(e) => this.onChange(e)}
-                        />
-                    </div>
-                    <div>
-                        <Button style={{marginRight: '10px'}} onClick={e => this.handleCancel(e)}>取消</Button>
-                        <Button style={{marginLeft: '10px'}} onClick={e => this.handleClick(e)}>保存</Button>
-                    </div>
-                </div>
-            )
-        } else {
+        if (!data.isEdit)
             return (
                 <div style={{padding: "0 20px"}}>
                     <div style={{paddingBottom: '10px'}}>{data.data}</div>
                     <Button onClick={e => this.onEdit(e)}>编辑</Button>
                 </div>
             )
-        }
+
+        return (
+            <div style={{padding: "0 20px"}}>
+                <div style={{paddingBottom: '10px'}}>
+                    <Input type="text"
+                        defaultValue={this.data}
+                        onChange={(e) => this.onChange(e)}
+                    />
+                </div>
+                <div>
+                    <Button
+                        style={{marginRight: '10px'}}
+                        onClick={e => this.handleCancel(e)}
+                    >取消</Button>
+                    <Button
+                        style={{marginLeft: '10px'}}
+                        onClick={e => this.handleClick(e)}
+                        loading={data.isFetching}
+                    >保存</Button>
+                </div>
+            </div>
+        )
     }
 }
 
@@ -94,11 +112,14 @@ class FriendModal extends Component {
     
     constructor() {
         super();
+
+        this.modalKey = 0;
     }
 
-    // shouldComponentUpdate(nextProps, nextState) {
-    //     return true
-    // }
+    componentWillReceiveProps(nextProps) {
+        if (nextProps.isEdit && this.props.data.id !== nextProps.data.id)
+            this.modalKey++;
+    }
 
     handleOk() {
         this.props.onHandleOk(this.data);
@@ -114,16 +135,26 @@ class FriendModal extends Component {
     }
 
     render() {
-        const { key, title, data, isEdit, confirmLoading } = this.props;
-        this.data = {
-            name: data['s_name'] || '',
-            address: data['s_value'] || ''
-        }
+        const {title, data, isEdit, confirmLoading } = this.props;
+        this.data = data;
         console.log(this.data);
-
+        const selectBefore = (
+            <Select defaultValue="Http://" style={{ width: 80 }}>
+                <Option value="Http://">Http://</Option>
+                <Option value="Https://">Https://</Option>
+            </Select>
+        );
+        const selectAfter = (
+            <Select defaultValue=".com" style={{ width: 70 }}>
+                <Option value=".com">.com</Option>
+                <Option value=".jp">.jp</Option>
+                <Option value=".cn">.cn</Option>
+                <Option value=".org">.org</Option>
+            </Select>
+        );
         return (
             <Modal 
-                key={key}
+                key={this.modalKey}
                 title={title}
                 visible={isEdit}
                 confirmLoading={confirmLoading}
@@ -140,8 +171,10 @@ class FriendModal extends Component {
                     <div style={{ padding: '5px' }}>网站地址：</div>
                     <Input
                         type="text"
-                        defaultValue={this.data.address}
-                        onChange={e => this.handleChange('address', e)}
+                        defaultValue={this.data.value}
+                        onChange={e => this.handleChange('value', e)}
+                        // addonBefore={selectBefore}
+                        // addonAfter={selectAfter}
                     />
                 </div>
             </Modal>
@@ -153,100 +186,123 @@ class FriendlyLink extends React.Component {
     constructor(props) {
         super(props);
 
-        this.columns = [{
-            title: '网站名称',
-            dataIndex: 'name',
-            width: '25%',
-            render: (text, record, index) => (<div className="editable-row-text">{ text }</div>),
-        }, {
-            title: '网站地址',
-            dataIndex: 'address',
-            width: '65%',
-            render: (text, record, index) => {
-                var textDOM = <a href={text} target='_black'>{text}</a>;
-                return (<div className="editable-row-text">{ textDOM || text }</div>)
-            },
-        }, {
-            title: '操作',
-            dataIndex: 'operation',
-            render: (text, record, index) => {
-                return (
-                    <div className="editable-row-operations">
-                        <div>
-                            <a onClick={() => this.onEdit(index)}>
-                                <Icon type="edit" />
-                            </a>
-                            <span>&nbsp;&nbsp;</span>
-                            <Popconfirm title="确定删除？" onConfirm={() => this.onDelete(index)}>
-                                <a><Icon type="delete" /></a>
-                            </Popconfirm>
+        this.tableOptions = {
+            size: 'middle',
+            pagination: false,
+            columns: [{
+                title: '网站名称',
+                dataIndex: 'name',
+                width: '25%',
+                render: (text, record, index) => (<div className="editable-row-text">{ text }</div>),
+            }, {
+                title: '网站地址',
+                dataIndex: 'value',
+                width: '65%',
+                render: (text, record, index) => {
+                    var textDOM = <a href={text} target='_black'>{text}</a>;
+                    return (<div className="editable-row-text">{ textDOM || text }</div>)
+                },
+            }, {
+                title: '操作',
+                dataIndex: 'operation',
+                render: (text, record, index) => {
+                    return (
+                        <div className="editable-row-operations">
+                            <div>
+                                <a onClick={() => this.onEdit(record)}>
+                                    <Icon type="edit" />
+                                </a>
+                                <span>&nbsp;&nbsp;</span>
+                                <Popconfirm title="确定删除？" onConfirm={() => this.onDelete(record)}>
+                                    <a><Icon type="delete" /></a>
+                                </Popconfirm>
+                            </div>
                         </div>
-                    </div>
-                );
-            }
-        }];
+                    );
+                }
+            }],
+            rowKey: function(record) { return record.id.toString() }
+        }
+
+        this.modalTitle = '添加友情链接';
     }
 
     componentDidMount() {
-        const { dispatch } = this.props;
-        dispatch(initFriendLink());
+        const { dispatch, friendLink } = this.props;
+        if (!friendLink.data.length)
+            dispatch(initFriendLink());
+    }
+
+    componentDidUpdate() {
+        const { dispatch, friendLink } = this.props;
+        if (friendLink.invalidate) {
+            message.error(friendLink.message);
+            dispatch(clearFriendLinkNotify());
+        }
+
+        if (friendLink.saveSuccessful) {
+            message.success(friendLink.message);
+            dispatch(cancelFriendLinkModal());
+            dispatch(clearFriendLinkNotify());
+            dispatch(initFriendLink());
+        }
+
+        if (friendLink.deleteSuccessful) {
+            message.success(friendLink.message);
+            dispatch(clearFriendLinkNotify());
+            dispatch(initFriendLink());
+        }
     }
 
     onAdd() {
         const { dispatch } = this.props;
+        this.modalTitle = '添加友情链接';
         dispatch(addFriendLink(true))
     }
 
-    onEdit(index) {
+    onEdit(data) {
         const { dispatch } = this.props;
-        dispatch(editFriendLink(true, index))
+        this.modalTitle = '编辑友情链接';
+        dispatch(editFriendLink(data))
     }
 
-    onDelete(index) {
-        const { dispatch, friendLink } = this.props;
-        const { data } = friendLink;
-        dispatch(delFriendLink(index, data[index]));
+    onDelete(data) {
+        const { dispatch } = this.props;
+        dispatch(delFriendLink(data));
     }
     
     onHandleOk(changeData) {
         const { dispatch, friendLink } = this.props;
-        const { data, changeId } = friendLink;
-
-        dispatch(saveFriendLink(data[changeId], changeData));
+        dispatch(saveFriendLink(changeData));
     }
 
     onHandleCancel() {
         const { dispatch } = this.props;
-        dispatch(editFriendLink(false));
+        dispatch(cancelFriendLinkModal());
     }
 
     render() {
         const { friendLink } = this.props;
-        const { isEdit, isFetching, data, changeId } = friendLink;
-        const dataSource = friendLink.data.map(item => {
-            return {
-                key: item['s_id'],
-                name: item['s_name'],
-                address: item['s_value']
-            }
-        })
-        const columns = this.columns;
+        const { isEdit, isFetching, data, changeData } = friendLink;
 
         return (
             <div>
+                <div style={{padding: '10px 0'}}>
+                    <Button className="editable-add-btn" type="primary" onClick={e => this.onAdd(e)}>添加</Button>
+                </div>
+                <Table
+                    bordered
+                    dataSource={friendLink.data}
+                    {...this.tableOptions}
+                />
                 <FriendModal
-                    key={changeId}
-                    data={data[changeId] || {}}
-                    title='友情链接设置'
+                    data={changeData}
+                    title={this.modalTitle}
                     isEdit={isEdit}
                     confirmLoading={isFetching}
                     onHandleOk={data => this.onHandleOk(data)}
                     onHandleCancel={() => this.onHandleCancel()}
                 />
-                <div style={{padding: '10px 0'}}>
-                    <Button className="editable-add-btn" type="primary" onClick={e => this.onAdd(e)}>添加</Button>
-                </div>
-                <Table bordered dataSource={dataSource} columns={columns} pagination={false} size="middle"/>
             </div>
         );
     }
@@ -262,15 +318,21 @@ const customPanelStyle = {
 
 class FullStation extends Component {
     render() {
-        const { baseinfo, dispatch } = this.props;
+        const { companyName, friendLink, baseinfo, dispatch } = this.props;
 
         return (
             <Collapse bordered={false} defaultActiveKey={[]}>
                 <Panel header={<div style={{fontWeight: 600}}>公司名称设置</div>} key="1" style={customPanelStyle}>
-                    <CompanyName data={baseinfo.name} dispatch={dispatch}/>
+                    <CompanyName
+                        data={ companyName }
+                        dispatch={dispatch}
+                    />
                 </Panel>
                 <Panel header={<span style={{fontWeight: 600}}>友情链接设置</span>} key="2" style={customPanelStyle}>
-                    <FriendlyLink friendLink={baseinfo.friendLink} dispatch={dispatch}/>
+                    <FriendlyLink
+                        friendLink={ friendLink }
+                        dispatch={dispatch}
+                    />
                 </Panel>
                 <Panel header={<span style={{fontWeight: 600}}>技术支持设置</span>} key="3" style={customPanelStyle}>
                 </Panel>
@@ -288,6 +350,8 @@ class FullStation extends Component {
 const mapStateToProps = (state, ownProps) => {
 
     return {
+        companyName: state.baseinfo.companyName,
+        friendLink: state.baseinfo.friendLink,
         baseinfo: state.baseinfo
     }
 }
